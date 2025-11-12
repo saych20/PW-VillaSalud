@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Recepcionista - Sistema Policlínico</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Pantalla de bienvenida / landing -->
+    <div id="welcomeOverlay" class="welcome-overlay">
+        <div class="welcome-card">
+            <div class="welcome-logo">
+                <i class="fas fa-clinic-medical"></i>
+            </div>
+            <h2>Bienvenido a Policlínico Villa Salud SRL</h2>
+            <p class="welcome-sub">Gestión rápida y segura de exámenes médicos ocupacionales. Programa, procesa y publica resultados en PDF.</p>
+            <div class="welcome-actions">
+                <button id="btnStart" class="btn btn-primary">Empezar</button>
+                <button id="btnSkip" class="btn btn-secondary">Cerrar</button>
+            </div>
+            <label class="welcome-hide">
+                <input type="checkbox" id="dontShowWelcome"> No mostrar nuevamente
+            </label>
+        </div>
+    </div>
+    
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-user-tie"></i> [Nombre]</h2>
+                <p>Recepcionista</p>
+            </div>
+            <div class="sidebar-nav">
+                <a href="dashboard-recepcionista.html" class="nav-item active">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="pacientes.html" class="nav-item">
+                    <i class="fas fa-users"></i> Pacientes
+                </a>
+                <a href="facturacion.html" class="nav-item">
+                    <i class="fas fa-file-invoice-dollar"></i> Facturación
+                </a>
+                <a href="reportes.html" class="nav-item">
+                    <i class="fas fa-chart-bar"></i> Reportes
+                </a>
+                <a href="../index.html" class="nav-item">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1>Dashboard Recepcionista</h1>
+                <div class="user-info">
+                    <span>Bienvenida, [Nombre]</span>
+                    <div class="user-avatar">RC</div>
+                </div>
+            </div>
+
+            <!-- Estadísticas del día -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="pacientesEsperando">6</div>
+                    <div class="stat-label">Pacientes Esperando</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="examenesProgramados">12</div>
+                    <div class="stat-label">Exámenes Programados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="examenesDelDia">8</div>
+                    <div class="stat-label">Exámenes del Día</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="facturasGeneradas">15</div>
+                    <div class="stat-label">Facturas Generadas</div>
+                </div>
+            </div>
+
+            <!-- Pacientes esperando -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Pacientes en Espera</h3>
+                    <button class="btn btn-primary" onclick="actualizarListaEspera()">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Paciente</th>
+                                <th>Hora Llegada</th>
+                                <th>Motivo</th>
+                                <th>Tiempo Espera</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pacientesEsperandoTable">
+                            <tr>
+                                <td>María González</td>
+                                <td>08:45</td>
+                                <td>Consulta</td>
+                                <td>15 min</td>
+                                <td>
+                                    <button class="btn btn-success btn-sm">Llamar</button>
+                                    <button class="btn btn-info btn-sm">Ver Info</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Carlos Rodríguez</td>
+                                <td>09:15</td>
+                                <td>Examen</td>
+                                <td>5 min</td>
+                                <td>
+                                    <button class="btn btn-success btn-sm">Llamar</button>
+                                    <button class="btn btn-info btn-sm">Ver Info</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Exámenes programados -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Exámenes Programados</h3>
+                    <button class="btn btn-primary" onclick="abrirModalNuevoExamen()">
+                        <i class="fas fa-plus"></i> Programar Examen
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Paciente</th>
+                                <th>Empresa</th>
+                                <th>Tipo Examen</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="examenesProgramadosTable">
+                            <tr>
+                                <td>10:00</td>
+                                <td>Ana Martínez</td>
+                                <td>ACME SAC</td>
+                                <td>Audiometría</td>
+                                <td><span class="badge badge-success">Confirmada</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm">Ver</button>
+                                    <button class="btn btn-warning btn-sm">Modificar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>11:30</td>
+                                <td>Luis Pérez</td>
+                                <td>Globex</td>
+                                <td>Oftalmología</td>
+                                <td><span class="badge badge-warning">Pendiente</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm">Ver</button>
+                                    <button class="btn btn-warning btn-sm">Modificar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Acciones rápidas -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Acciones Rápidas</h3>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <button class="btn btn-primary" onclick="registrarPaciente()">
+                        <i class="fas fa-user-plus"></i> Registrar Paciente
+                    </button>
+                    <button class="btn btn-success" onclick="abrirModalNuevoExamen()">
+                        <i class="fas fa-stethoscope"></i> Programar Examen
+                    </button>
+                    <button class="btn btn-info" onclick="buscarPaciente()">
+                        <i class="fas fa-search"></i> Buscar Paciente
+                    </button>
+                    <button class="btn btn-warning" onclick="generarFactura()">
+                        <i class="fas fa-file-invoice"></i> Generar Factura
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    
+    <script>
+        // Control del overlay de bienvenida
+        document.addEventListener('DOMContentLoaded', () => {
+            const welcome = document.getElementById('welcomeOverlay');
+            const btnStart = document.getElementById('btnStart');
+            const btnSkip = document.getElementById('btnSkip');
+            const dontShow = document.getElementById('dontShowWelcome');
+
+            try {
+                const hide = localStorage.getItem('policlinico_hide_welcome');
+                if (hide === '1') {
+                    if (welcome) welcome.style.display = 'none';
+                } else {
+                    if (welcome) welcome.style.display = 'flex';
+                }
+            } catch (e) { 
+                if (welcome) welcome.style.display = 'flex'; 
+            }
+
+            if (btnStart) btnStart.addEventListener('click', () => {
+                if (dontShow && dontShow.checked) localStorage.setItem('policlinico_hide_welcome', '1');
+                if (welcome) welcome.style.display = 'none';
+            });
+            
+            if (btnSkip) btnSkip.addEventListener('click', () => {
+                if (dontShow && dontShow.checked) localStorage.setItem('policlinico_hide_welcome', '1');
+                if (welcome) welcome.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

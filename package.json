@@ -1,0 +1,27 @@
+{
+  "name": "policlinico-app",
+  "version": "1.0.0",
+  "description": "Sistema de gestión para policlínico con módulos de citas, pacientes y exámenes médicos",
+  "main": "src/index.html",
+  "scripts": {
+    "start": "npx http-server src -p 3000 -o",
+    "dev": "npx live-server src --port=3000 --open=/",
+    "build": "echo 'Build completed'"
+  },
+  "keywords": [
+    "policlinico",
+    "medico",
+    "citas",
+    "pacientes",
+    "examenes"
+  ],
+  "author": "Sistema Policlínico",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.0"
+  }
+}

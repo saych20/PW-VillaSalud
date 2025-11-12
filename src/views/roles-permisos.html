@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roles y Permisos - Sistema Policlínico</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-user-shield"></i> [Administrador]</h2>
+                <p>Administrador del Sistema</p>
+            </div>
+            <div class="sidebar-nav">
+                <a href="dashboard-admin.html" class="nav-item">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="usuarios.html" class="nav-item">
+                    <i class="fas fa-users-cog"></i> Gestión de Usuarios
+                </a>
+                <a href="roles-permisos.html" class="nav-item active">
+                    <i class="fas fa-shield-alt"></i> Roles y Permisos
+                </a>
+                <a href="#" class="nav-item logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1>Roles y Permisos del Sistema</h1>
+                <div class="user-info">
+                    <button class="btn btn-primary" onclick="abrirModalNuevoRol()">
+                        <i class="fas fa-plus"></i> Nuevo Rol
+                    </button>
+                </div>
+            </div>
+
+            <!-- Roles existentes -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Roles del Sistema</h3>
+                    <button class="btn btn-info" onclick="actualizarRoles()">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Rol</th>
+                                <th>Descripción</th>
+                                <th>Usuarios</th>
+                                <th>Permisos</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rolesTable">
+                            <tr>
+                                <td><span class="badge badge-danger">Administrador</span></td>
+                                <td>Acceso completo al sistema</td>
+                                <td>1</td>
+                                <td>Todos</td>
+                                <td><span class="badge badge-success">Activo</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm" onclick="verRol('admin')">Ver</button>
+                                    <button class="btn btn-warning btn-sm" onclick="editarRol('admin')">Editar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-primary">Médico</span></td>
+                                <td>Gestión de pacientes y exámenes</td>
+                                <td>8</td>
+                                <td>15</td>
+                                <td><span class="badge badge-success">Activo</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm" onclick="verRol('medico')">Ver</button>
+                                    <button class="btn btn-warning btn-sm" onclick="editarRol('medico')">Editar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-info">Recepcionista</span></td>
+                                <td>Gestión de pacientes</td>
+                                <td>5</td>
+                                <td>12</td>
+                                <td><span class="badge badge-success">Activo</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm" onclick="verRol('recepcionista')">Ver</button>
+                                    <button class="btn btn-warning btn-sm" onclick="editarRol('recepcionista')">Editar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-success">Técnico</span></td>
+                                <td>Procesamiento de exámenes</td>
+                                <td>3</td>
+                                <td>8</td>
+                                <td><span class="badge badge-success">Activo</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm" onclick="verRol('tecnico')">Ver</button>
+                                    <button class="btn btn-warning btn-sm" onclick="editarRol('tecnico')">Editar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Configuración de permisos por módulo -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Configuración de Permisos por Módulo</h3>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Módulo</th>
+                                <th>Administrador</th>
+                                <th>Médico</th>
+                                <th>Recepcionista</th>
+                                <th>Técnico</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Dashboard</strong></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>Pacientes</strong></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-danger">✗</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Exámenes</strong></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-warning">~</span></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Reportes</strong></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-warning">~</span></td>
+                                <td><span class="badge badge-warning">~</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Usuarios</strong></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-danger">✗</span></td>
+                                <td><span class="badge badge-danger">✗</span></td>
+                                <td><span class="badge badge-danger">✗</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Configuración</strong></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-danger">✗</span></td>
+                                <td><span class="badge badge-danger">✗</span></td>
+                                <td><span class="badge badge-danger">✗</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Notificaciones</strong></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Chat</strong></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Inventario</strong></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-danger">✗</span></td>
+                                <td><span class="badge badge-warning">~</span></td>
+                                <td><span class="badge badge-warning">~</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Backup</strong></td>
+                                <td><span class="badge badge-success">✓</span></td>
+                                <td><span class="badge badge-danger">✗</span></td>
+                                <td><span class="badge badge-danger">✗</span></td>
+                                <td><span class="badge badge-danger">✗</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: var(--light-gray); border-radius: var(--border-radius);">
+                    <small>
+                        <strong>Leyenda:</strong>
+                        <span class="badge badge-success">✓</span> Acceso completo |
+                        <span class="badge badge-warning">~</span> Acceso limitado |
+                        <span class="badge badge-danger">✗</span> Sin acceso
+                    </small>
+                </div>
+            </div>
+
+            <!-- Permisos específicos por acción -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Permisos Específicos por Acción</h3>
+                    <button class="btn btn-primary" onclick="configurarPermisos()">
+                        <i class="fas fa-cogs"></i> Configurar
+                    </button>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                    <!-- Dashboard -->
+                    <div class="card" style="margin: 0;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-tachometer-alt"></i> Dashboard</h4>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox" checked disabled> Ver estadísticas</label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox" checked disabled> Ver notificaciones</label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox"> Personalizar vista</label>
+                        </div>
+                    </div>
+
+                    
+
+                    <!-- Pacientes -->
+                    <div class="card" style="margin: 0;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-users"></i> Pacientes</h4>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox" checked> Crear pacientes</label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox" checked> Editar pacientes</label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox" checked> Ver historial</label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox"> Eliminar pacientes</label>
+                        </div>
+                    </div>
+
+                    <!-- Exámenes -->
+                    <div class="card" style="margin: 0;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-stethoscope"></i> Exámenes</h4>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox" checked> Solicitar exámenes</label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox" checked> Procesar resultados</label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox" checked> Imprimir resultados</label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox"> Validar resultados</label>
+                        </div>
+                    </div>
+
+                    <!-- Reportes -->
+                    <div class="card" style="margin: 0;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-chart-bar"></i> Reportes</h4>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox" checked> Ver reportes básicos</label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox"> Generar reportes personalizados</label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox"> Exportar a PDF</label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox"> Programar reportes automáticos</label>
+                        </div>
+                    </div>
+
+                    <!-- Administración -->
+                    <div class="card" style="margin: 0;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-cogs"></i> Administración</h4>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox"> Gestionar usuarios</label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox"> Configurar roles</label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox"> Ver logs del sistema</label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox"> Configurar sistema</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Nuevo Rol -->
+    <div id="modalNuevoRol" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Nuevo Rol</h3>
+                <span class="close" onclick="cerrarModalNuevoRol()">&times;</span>
+            </div>
+            <form id="formNuevoRol">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nuevoRolNombre">Nombre del Rol *</label>
+                        <input type="text" id="nuevoRolNombre" required placeholder="Nombre del rol">
+                    </div>
+                    <div class="form-group">
+                        <label for="nuevoRolDescripcion">Descripción</label>
+                        <input type="text" id="nuevoRolDescripcion" placeholder="Descripción del rol">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Permisos del Rol:</label>
+                    <div id="permisosRolContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+                        <!-- Los permisos se cargarán dinámicamente -->
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalNuevoRol()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Crear Rol</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../assets/js/admin.js"></script>
+</body>
+</html>

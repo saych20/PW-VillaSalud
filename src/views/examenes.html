@@ -1,0 +1,3213 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Gestión de Exámenes Médicos Ocupacionales - Policlínico Villa Salud SRL
+    </title>
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="main-layout">
+      <!-- Sidebar -->
+      <nav class="sidebar">
+        <div class="sidebar-header">
+          <h2><i class="fas fa-user-md"></i> [Usuario]</h2>
+          <p id="userRole">[Rol]</p>
+        </div>
+        <div class="sidebar-nav">
+          <a href="dashboard-medico.html" class="nav-item" id="dashboardLink">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+          </a>
+          <a href="pacientes.html" class="nav-item">
+            <i class="fas fa-users"></i> Pacientes
+          </a>
+          <a href="examenes.html" class="nav-item active">
+            <i class="fas fa-stethoscope"></i> Exámenes
+          </a>
+          <a href="reportes.html" class="nav-item">
+            <i class="fas fa-chart-bar"></i> Reportes
+          </a>
+          <a href="#" class="nav-item logout-btn">
+            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+          </a>
+        </div>
+      </nav>
+
+      <!-- Contenido Principal -->
+      <main class="main-content">
+        <div
+          class="content-header"
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+          "
+        >
+          <div style="display: flex; gap: 1rem; align-items: center">
+            <div
+              style="
+                width: 56px;
+                height: 56px;
+                background: var(--primary-color);
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 22px;
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+              "
+            >
+              <i class="fas fa-vials"></i>
+            </div>
+            <div>
+              <h1 style="margin: 0; font-size: 1.6rem">
+                Gestión de Exámenes Médicos Ocupacionales
+              </h1>
+              <p style="margin: 0.25rem 0 0; color: var(--muted-color)">
+                Panel para programar, procesar y publicar resultados —
+                Policlínico Villa Salud SRL
+              </p>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.75rem; align-items: center">
+            <button
+              id="btnNuevoExamen"
+              class="btn btn-outline"
+              onclick="abrirModalNuevoExamen()"
+              title="Programar nuevo examen"
+            >
+              <i class="fas fa-plus"></i> Nuevo Examen
+            </button>
+            <button
+              class="btn btn-success"
+              onclick="exportarExamenes()"
+              title="Exportar lista de exámenes"
+            >
+              <i class="fas fa-file-export"></i> Exportar
+            </button>
+            <button
+              class="btn btn-info"
+              onclick="actualizarExamenes()"
+              title="Actualizar lista"
+            >
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Filtros de Búsqueda</h3>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="filtroPacienteExamen">Paciente</label>
+              <input
+                type="text"
+                id="filtroPacienteExamen"
+                placeholder="Buscar por nombre o DNI..."
+                onkeyup="filtrarExamenes()"
+              />
+            </div>
+            <div class="form-group">
+              <label for="filtroCategoriaExamen">Categoría de Examen</label>
+              <select id="filtroCategoriaExamen" onchange="filtrarExamenes()">
+                <option value="">Todas</option>
+                <option value="EMO">Examen Médico Ocupacional (EMO)</option>
+                <option value="especifico">Examen Específico(EME)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="filtroEmpresa">Empresa</label>
+              <select id="filtroEmpresa" onchange="filtrarExamenes()">
+                <option value="">Todas</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="filtroTipoExamen">Tipo de Examen</label>
+              <select id="filtroTipoExamen" onchange="filtrarExamenes()">
+                <option value="">Todos</option>
+                <option value="ingreso">Examen Ingreso</option>
+                <option value="retiro">Examen Retiro</option>
+                <option value="anual">Examen Anual</option>
+                <option value="recategorizacion">
+                  Examen Recategorización
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de exámenes programados -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Lista de Exámenes Programados</h3>
+            <div>
+              <button class="btn btn-success" onclick="exportarExamenes()">
+                <i class="fas fa-download"></i> Exportar
+              </button>
+              <button class="btn btn-info" onclick="actualizarExamenes()">
+                <i class="fas fa-sync-alt"></i> Actualizar
+              </button>
+            </div>
+          </div>
+          <div class="table-container" style="overflow-x: auto">
+            <table class="table" id="tablaExamenes">
+              <thead>
+                <tr>
+                  <th>CÓDIGO</th>
+                  <th>NOMBRES</th>
+                  <th>APELLIDOS</th>
+                  <th>DNI</th>
+                  <th>FECHA</th>
+                  <th>CAT EXAMEN</th>
+                  <th>TIPO EXAMEN</th>
+                  <th id="columnaCamo" style="display: none">CAMO</th>
+                  <th id="columnaSignosVitales" style="display: none">
+                    SIGNOS VITALES
+                  </th>
+                  <th id="columnaOftalmologia" style="display: none">
+                    OFTALMOLOGÍA
+                  </th>
+                  <th id="columnaAudiometria" style="display: none">
+                    AUDIOMETRÍA
+                  </th>
+                  <th id="columnaPsicologia" style="display: none">
+                    PSICOLOGÍA
+                  </th>
+                  <th id="columnaEkg" style="display: none">EKG</th>
+                  <th id="columnaEspirometria" style="display: none">
+                    ESPIROMETRÍA
+                  </th>
+                  <th id="columnaCardiologia" style="display: none">
+                    CARDIOLOGÍA
+                  </th>
+                  <th id="columnaLaboratorio" style="display: none">
+                    LABORATORIO
+                  </th>
+                  <th id="columnaRadiologia" style="display: none">
+                    RADIOLOGÍA
+                  </th>
+                  <th id="columnaAlturaEstructural" style="display: none">
+                    ALTURA ESTRUCTURAL
+                  </th>
+                  <th id="columnaPsicosensometrico" style="display: none">
+                    PSICOSENSOMETRICO
+                  </th>
+                  <th>APTITUD</th>
+                  <th>PDF</th>
+                  <th>GESTIÓN</th>
+                </tr>
+              </thead>
+              <tbody id="examenesTableBody">
+                <!-- Los datos se cargarán dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 0.75rem">
+          <div class="card-header">
+            <h4 class="card-title">Leyenda y Roles</h4>
+          </div>
+          <div
+            style="
+              padding: 0.75rem;
+              display: flex;
+              gap: 1rem;
+              align-items: center;
+              flex-wrap: wrap;
+            "
+          >
+            <span
+              style="
+                background: #eaf7ff;
+                color: var(--primary-color);
+                padding: 6px 10px;
+                border-radius: 6px;
+              "
+              >Administrador: acceso total (CRUD, roles y usuarios)</span
+            >
+            <span
+              style="
+                background: #f7f9ea;
+                color: var(--accent-color);
+                padding: 6px 10px;
+                border-radius: 6px;
+              "
+              >Admisionista/Técnico: programar y procesar exámenes</span
+            >
+            <span
+              style="
+                background: #fff7ea;
+                color: #d97706;
+                padding: 6px 10px;
+                border-radius: 6px;
+              "
+              >Empresa: ver y descargar resultados</span
+            >
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Modal Programar Examen -->
+    <div id="modalNuevoExamen" class="modal">
+      <div class="modal-content" style="max-width: 900px">
+        <div class="modal-header">
+          <h3 class="modal-title">Gestión de Examen</h3>
+          <span class="close" onclick="cerrarModalNuevoExamen()">&times;</span>
+        </div>
+        <form id="formNuevoExamen">
+          <!-- Sección de Examen -->
+          <div id="seccionExamen">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="pacienteExamen">Paciente *</label>
+                <select id="pacienteExamen" required>
+                  <option value="">Seleccionar paciente</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="empresaExamen">Empresa *</label>
+                <select id="empresaExamen" required>
+                  <option value="">Seleccionar empresa</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="categoriaExamen">Categoría de Examen *</label>
+                <select
+                  id="categoriaExamen"
+                  required
+                  onchange="cambiarCategoriaExamen()"
+                >
+                  <option value="">Seleccionar categoría</option>
+                  <option value="EMO">Examen Médico Ocupacional(EMO)</option>
+                  <option value="especifico">Examen Específico(EME)</option>
+                </select>
+              </div>
+              <div
+                class="form-group"
+                id="grupoTipoExamen"
+                style="display: none"
+              >
+                <label for="tipoExamenEMO">Tipo de Examen EMO *</label>
+                <select id="tipoExamenEMO">
+                  <option value="">Seleccionar tipo</option>
+                  <option value="ingreso">Examen de Ingreso</option>
+                  <option value="retiro">Examen de Retiro</option>
+                  <option value="anual">Examen Anual</option>
+                  <option value="recategorizacion">
+                    Examen de Recategorización
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Selección de exámenes -->
+            <div id="seleccionExamenes" style="display: none">
+              <div class="card">
+                <div class="card-header">
+                  <h4>Seleccionar Exámenes</h4>
+                </div>
+                <div class="form-row" id="checkboxExamenes">
+                  <!-- Los checkboxes se cargarán dinámicamente -->
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="fechaExamen">Fecha Programada *</label>
+                <input type="date" id="fechaExamen" required />
+              </div>
+              <div class="form-group">
+                <label for="horaExamen">Hora Programada *</label>
+                <input type="time" id="horaExamen" required />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="observaciones">Observaciones</label>
+            <textarea
+              id="observaciones"
+              rows="3"
+              placeholder="Observaciones adicionales..."
+            ></textarea>
+          </div>
+
+          <div
+            style="
+              display: flex;
+              gap: 1rem;
+              justify-content: flex-end;
+              margin-top: 2rem;
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cerrarModalNuevoExamen()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Guardar Examen
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Procesar Audiometría -->
+    <div id="modalAudiometria" class="modal">
+      <div class="modal-content" style="max-width: 1000px">
+        <div class="modal-header">
+          <h3 class="modal-title">Evaluación Audiométrica Completa</h3>
+          <span class="close" onclick="cerrarModalAudiometria()">&times;</span>
+        </div>
+        <form id="formAudiometria">
+          <div class="form-group">
+            <label
+              >Paciente:
+              <strong id="audiometriaPaciente">María González</strong></label
+            >
+          </div>
+
+          <!-- Uso de Protectores auditivos -->
+          <div class="card">
+            <div class="card-header">
+              <h4>Uso de protectores auditivos</h4>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="zumbido">Tampones</label>
+                <select id="zumbido" name="zumbido">
+                  <option value="">Seleccionar</option>
+                  <option value="si" selected>Sí</option>
+                  <option value="no">No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="dolor_oidos">Orejeras</label>
+                <select id="dolor_oidos" name="dolor_oidos">
+                  <option value="">Seleccionar</option>
+                  <option value="si" selected>Sí</option>
+                  <option value="no">No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="disminucion_audicion">Apreciación del ruido</label>
+                <select id="disminucion_audicion" name="disminucion_audicion">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="exposicion_ruido">Ruido muy Intenso</label>
+                <select id="exposicion_ruido" name="exposicion_ruido">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="exposicion_ruido">Ruido Moderado</label>
+                <select id="exposicion_ruido" name="exposicion_ruido">
+                  <option value="">Seleccionar</option>
+                  <option value="si" selected>Sí</option>
+                  <option value="no">No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="exposicion_ruido">Ruido no Molesto</label>
+                <select id="exposicion_ruido" name="exposicion_ruido">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Antecedentes relacionados -->
+          <div class="card">
+            <div class="card-header">
+              <h4>Antecedentes relacionados</h4>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="zumbido">Consumo de Tabaco</label>
+                <select id="zumbido" name="zumbido">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="dolor_oidos">Servicio Militar</label>
+                <select id="dolor_oidos" name="dolor_oidos">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="disminucion_audicion"
+                  >Hobbies con exp. a ruido</label
+                >
+                <select id="disminucion_audicion" name="disminucion_audicion">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="exposicion_ruido">Exp. laboral a químicos</label>
+                <select id="exposicion_ruido" name="exposicion_ruido">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="exposicion_ruido">Infección al Oído</label>
+                <select id="exposicion_ruido" name="exposicion_ruido">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="exposicion_ruido">Uso de Ototóxicos</label>
+                <select id="exposicion_ruido" name="exposicion_ruido">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sintomas actuales -->
+          <div class="card">
+            <div class="card-header">
+              <h4>Síntomas Actuales</h4>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="dolor_oidos">Disminución de la audición</label>
+                <select id="dolor_oidos" name="dolor_oidos">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="dolor_oidos">Dolor de Oídos</label>
+                <select id="dolor_oidos" name="dolor_oidos">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="zumbido">Zumbido</label>
+                <select id="zumbido" name="zumbido">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="disminucion_audicion">Mareos</label>
+                <select id="disminucion_audicion" name="disminucion_audicion">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="disminucion_audicion">Infección del oído</label>
+                <select id="disminucion_audicion" name="disminucion_audicion">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="exposicion_ruido">Otra</label>
+                <select id="exposicion_ruido" name="exposicion_ruido">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Otoscopia -->
+          <div class="card">
+            <div class="card-header">
+              <h4>OTOSCOPIA</h4>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="conducto_od">Conducto auditivo OD</label>
+                <select id="conducto_od" name="conducto_od">
+                  <option value="">Seleccionar</option>
+                  <option value="normal">Normal</option>
+                  <option value="conductiva">Conductiva</option>
+                  <option value="sensorioneural">Sensorioneural</option>
+                  <option value="mixta">Mixta</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="conducto_oi">Conducto auditivo OI</label>
+                <select id="conducto_oi" name="conducto_oi">
+                  <option value="">Seleccionar</option>
+                  <option value="normal">Normal</option>
+                  <option value="conductiva">Conductiva</option>
+                  <option value="sensorioneural">Sensorioneural</option>
+                  <option value="mixta">Mixta</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="timpanos_od">Tímpanos OD</label>
+                <select id="timpanos_od" name="timpanos_od">
+                  <option value="">Seleccionar</option>
+                  <option value="normal">Normal</option>
+                  <option value="conductiva">Conductiva</option>
+                  <option value="sensorioneural">Sensorioneural</option>
+                  <option value="mixta">Mixta</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="timpanos_oi">Tímpanos OI</label>
+                <select id="timpanos_oi" name="timpanos_oi">
+                  <option value="">Seleccionar</option>
+                  <option value="normal">Normal (0-25 dB)</option>
+                  <option value="leve">Leve (26-40 dB)</option>
+                  <option value="moderada">Moderada (41-55 dB)</option>
+                  <option value="severa">Severa (56-70 dB)</option>
+                  <option value="profunda">Profunda (>70 dB)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Audiometría Tonal Vía Aérea -->
+          <div class="card">
+            <div class="card-header">
+              <h4>Audiometría Tonal Vía Aérea (dB HL)</h4>
+            </div>
+            <div class="form-group full-width">
+              <table
+                style="
+                  width: 100%;
+                  text-align: center;
+                  border-collapse: collapse;
+                  margin: 1rem 0;
+                "
+              >
+                <thead>
+                  <tr style="background: var(--secondary-color)">
+                    <th style="padding: 0.5rem; border: 1px solid #ddd">
+                      Frecuencia (Hz)
+                    </th>
+                    <th style="padding: 0.5rem; border: 1px solid #ddd">
+                      OD (dB)
+                    </th>
+                    <th style="padding: 0.5rem; border: 1px solid #ddd">
+                      OI (dB)
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">500</td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="audio_od_250"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="audio_oi_250"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      1000
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="audio_od_500"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="audio_oi_500"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      2000
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="audio_od_1000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="audio_oi_1000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      3000
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="audio_od_2000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="audio_oi_2000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      4000
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="audio_od_4000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="audio_oi_4000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      6000
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="audio_od_8000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="audio_oi_8000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      8000
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="audio_od_8000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="audio_oi_8000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Audiometría Vía Ósea -->
+          <div class="card">
+            <div class="card-header">
+              <h4>Audiometría Vía Ósea (dB HL)</h4>
+            </div>
+            <div class="form-group full-width">
+              <table
+                style="
+                  width: 100%;
+                  text-align: center;
+                  border-collapse: collapse;
+                  margin: 1rem 0;
+                "
+              >
+                <thead>
+                  <tr style="background: var(--secondary-color)">
+                    <th style="padding: 0.5rem; border: 1px solid #ddd">
+                      Frecuencia (Hz)
+                    </th>
+                    <th style="padding: 0.5rem; border: 1px solid #ddd">
+                      OD (dB)
+                    </th>
+                    <th style="padding: 0.5rem; border: 1px solid #ddd">
+                      OI (dB)
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">500</td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="osea_od_250"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="osea_oi_250"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      1000
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="osea_od_500"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="osea_oi_500"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      2000
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="osea_od_1000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="osea_oi_1000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      3000
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="osea_od_2000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="osea_oi_2000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      4000
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="osea_od_4000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="osea_oi_4000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      6000
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="osea_od_6000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="osea_oi_6000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      8000
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="osea_od_8000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        step="5"
+                        name="osea_oi_8000"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Logoaudiometría -->
+          <div class="card">
+            <div class="card-header">
+              <h4>Logoaudiometría</h4>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="umbral_discurso_od">Umbral de Discr. OD(dB)</label>
+                <input
+                  type="number"
+                  id="umbral_discurso_od"
+                  name="umbral_discurso_od"
+                  min="0"
+                  max="120"
+                  step="5"
+                />
+              </div>
+              <div class="form-group">
+                <label for="umbral_discurso_oi">Umbral de Discr. OI(dB)</label>
+                <input
+                  type="number"
+                  id="umbral_discurso_oi"
+                  name="umbral_discurso_oi"
+                  min="0"
+                  max="120"
+                  step="5"
+                />
+              </div>
+              <div class="form-group">
+                <label for="discriminacion_od"
+                  >% de Discriminación OD (%)</label
+                >
+                <input
+                  type="number"
+                  id="discriminacion_od"
+                  name="discriminacion_od"
+                  min="0"
+                  max="100"
+                  step="5"
+                />
+              </div>
+              <div class="form-group">
+                <label for="discriminacion_oi"
+                  >% de Discriminación OI (%)</label
+                >
+                <input
+                  type="number"
+                  id="discriminacion_oi"
+                  name="discriminacion_oi"
+                  min="0"
+                  max="100"
+                  step="5"
+                />
+              </div>
+              <div class="form-group">
+                <label for="umbral_discurso_od"
+                  >Umbral de Confort MCL OD(dB)</label
+                >
+                <input
+                  type="number"
+                  id="umbral_discurso_od"
+                  name="umbral_discurso_od"
+                  min="0"
+                  max="120"
+                  step="5"
+                />
+              </div>
+              <div class="form-group">
+                <label for="umbral_discurso_oi"
+                  >Umbral de Confort MCL OI (dB)</label
+                >
+                <input
+                  type="number"
+                  id="umbral_discurso_oi"
+                  name="umbral_discurso_oi"
+                  min="0"
+                  max="120"
+                  step="5"
+                />
+              </div>
+              <div class="form-group">
+                <label for="discriminacion_od"
+                  >Umbral de disconfort MCL OI (dB)</label
+                >
+                <input
+                  type="number"
+                  id="discriminacion_od"
+                  name="discriminacion_od"
+                  min="0"
+                  max="100"
+                  step="5"
+                />
+              </div>
+              <div class="form-group">
+                <label for="discriminacion_oi"
+                  >Umbral de disconfort MCL OI (dB)</label
+                >
+                <input
+                  type="number"
+                  id="discriminacion_oi"
+                  name="discriminacion_oi"
+                  min="0"
+                  max="100"
+                  step="5"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Otoscopia -->
+          <div class="card">
+            <div class="card-header">
+              <h4>Conclusiones</h4>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="conducto_od">Conclusiones OD</label>
+                <select id="conducto_od" name="conducto_od">
+                  <option value="">Seleccionar</option>
+                  <option value="normal">Normal</option>
+                  <option value="conductiva">Conductiva</option>
+                  <option value="sensorioneural">Sensorioneural</option>
+                  <option value="mixta">Mixta</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="conducto_oi">Conclusiones OI</label>
+                <select id="conducto_oi" name="conducto_oi">
+                  <option value="">Seleccionar</option>
+                  <option value="normal">Normal</option>
+                  <option value="conductiva">Conductiva</option>
+                  <option value="sensorioneural">Sensorioneural</option>
+                  <option value="mixta">Mixta</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="conducto_oi">Diagnóstico</label>
+            <select id="conducto_oi" name="conducto_oi">
+              <option value="">Seleccionar</option>
+              <option value="normal">Normal</option>
+              <option value="conductiva">Conductiva</option>
+              <option value="sensorioneural">Sensorioneural</option>
+              <option value="mixta">Mixta</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="audiometriaObservaciones">Observaciones</label>
+            <textarea
+              id="audiometriaObservaciones"
+              name="audiometriaObservaciones"
+              rows="3"
+              placeholder="Observaciones del examen..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="recomendaciones_audio">Recomendaciones</label>
+            <textarea
+              id="recomendaciones_audio"
+              name="recomendaciones_audio"
+              rows="2"
+              placeholder="Recomendaciones para el paciente..."
+            ></textarea>
+          </div>
+
+          <div
+            style="
+              display: flex;
+              gap: 1rem;
+              justify-content: flex-end;
+              margin-top: 2rem;
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cerrarModalAudiometria()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Guardar Resultados
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Procesar Oftalmología -->
+    <div id="modalOftalmologia" class="modal">
+      <div class="modal-content" style="max-width: 1000px">
+        <div class="modal-header">
+          <h3 class="modal-title">Evaluación Oftalmológica Completa</h3>
+          <span class="close" onclick="cerrarModalOftalmologia()">&times;</span>
+        </div>
+        <form id="formOftalmologia">
+          <div class="form-group">
+            <label
+              >Paciente:
+              <strong id="oftalmologiaPaciente">Ana Martínez</strong></label
+            >
+          </div>
+
+          <!-- Antecedentes relacionados -->
+          <div class="card">
+            <div class="card-header">
+              <h4>PREGUNTAS</h4>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="zumbido">Maneja Vehículo</label>
+                <select id="zumbido" name="zumbido">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="dolor_oidos">Cirugia Mayor reciente</label>
+                <select id="dolor_oidos" name="dolor_oidos">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="disminucion_audicion">Diabetes</label>
+                <select id="disminucion_audicion" name="disminucion_audicion">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="exposicion_ruido">Hipertensión</label>
+                <select id="exposicion_ruido" name="exposicion_ruido">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="exposicion_ruido">Glaucoma</label>
+                <select id="exposicion_ruido" name="exposicion_ruido">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="exposicion_ruido">Cirujia Ocular</label>
+                <select id="exposicion_ruido" name="exposicion_ruido">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="exposicion_ruido">Trauma Ocular</label>
+                <select id="exposicion_ruido" name="exposicion_ruido">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="exposicion_ruido">Usa Lentes Correctores</label>
+                <select id="exposicion_ruido" name="exposicion_ruido">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="otros">Otros</label>
+                <select id="otros" name="otros">
+                  <option value="">Seleccionar</option>
+                  <option value="si">Sí</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Agudeza Visual -->
+          <div class="card">
+            <div class="card-header">
+              <h4>AGUDEZA VISUAL</h4>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="vision_cerca_od">Visión de Cerca OD (S/C)</label>
+                <input
+                  type="text"
+                  id="vision_cerca_od"
+                  name="vision_cerca_od"
+                  placeholder="J1, J2, etc."
+                />
+              </div>
+              <div class="form-group">
+                <label for="vision_cerca_oi">Visión de Cerca OI (S/C)</label>
+                <input
+                  type="text"
+                  id="vision_cerca_oi"
+                  name="vision_cerca_oi"
+                  placeholder="J1, J2, etc."
+                />
+              </div>
+              <div class="form-group">
+                <label for="vision_cerca_sc_od">Visión de Cerca OD (C)</label>
+                <input
+                  type="text"
+                  id="vision_cerca_sc_od"
+                  name="vision_cerca_sc_od"
+                  placeholder="J1, J2, etc."
+                />
+              </div>
+              <div class="form-group">
+                <label for="vision_cerca_sc_oi">Visión de Cerca OI (C)</label>
+                <input
+                  type="text"
+                  id="vision_cerca_sc_oi"
+                  name="vision_cerca_sc_oi"
+                  placeholder="J1, J2, etc."
+                />
+              </div>
+              <div class="form-group">
+                <label for="vision_lejos_c_od">Visión de Lejos OD (S/C)</label>
+                <input
+                  type="text"
+                  id="vision_lejos_c_od"
+                  name="vision_lejos_c_od"
+                  placeholder="20/20"
+                />
+              </div>
+              <div class="form-group">
+                <label for="vision_lejos_c_oi">Visión de Lejos OI (S/C)</label>
+                <input
+                  type="text"
+                  id="vision_lejos_c_oi"
+                  name="vision_lejos_c_oi"
+                  placeholder="20/20"
+                />
+              </div>
+              <div class="form-group">
+                <label for="vision_lejos_sc_od">Visión de Lejos OD (C)</label>
+                <input
+                  type="text"
+                  id="vision_lejos_sc_od"
+                  name="vision_lejos_sc_od"
+                  placeholder="20/20"
+                />
+              </div>
+              <div class="form-group">
+                <label for="vision_lejos_sc_oi">Visión de Lejos OI (C)</label>
+                <input
+                  type="text"
+                  id="vision_lejos_sc_oi"
+                  name="vision_lejos_sc_oi"
+                  placeholder="20/20"
+                />
+              </div>
+            </div>
+            <div class="card-header">
+              <h4>VISIÓN DE COLORES</h4>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="vision_colores">VISIÓN DE COLORES OD</label>
+                <select id="vision_colores" name="vision_colores">
+                  <option value="">Seleccionar</option>
+                  <option value="normal" selected>Normal</option>
+                  <option value="tritanopia">Tritanopia</option>
+                  <option value="dicromasia">Dicromasia</option>
+                  <option value="discromatopsia">Discromatopsia</option>
+                  <option value="discromatopsia_leve">
+                    Discromatopsia leve
+                  </option>
+                  <option value="discromatopsia_moderada">
+                    Discromatopsia moderada
+                  </option>
+                  <option value="discromatopsia_grave">
+                    Discromatopsia grave
+                  </option>
+                  <option value="acromatopsia">Acromatopsia</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="vision_colores">VISIÓN DE COLORES OI</label>
+                <select id="vision_colores" name="vision_colores">
+                  <option value="">Seleccionar</option>
+                  <option value="normal" selected>Normal</option>
+                  <option value="tritanopia">Tritanopia</option>
+                  <option value="dicromasia">Dicromasia</option>
+                  <option value="discromatopsia">Discromatopsia</option>
+                  <option value="discromatopsia_leve">
+                    Discromatopsia leve
+                  </option>
+                  <option value="discromatopsia_moderada">
+                    Discromatopsia moderada
+                  </option>
+                  <option value="discromatopsia_grave">
+                    Discromatopsia grave
+                  </option>
+                  <option value="acromatopsia">Acromatopsia</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="vision_colores"
+                  >VISIÓN DE COLORES - RESULTADO</label
+                >
+                <select id="vision_colores" name="vision_colores">
+                  <option value="">Seleccionar</option>
+                  <option value="discromatopsia" selected>Conservado</option>
+                  <option value="normal" selected>Normal</option>
+                  <option value="tritanopia">Tritanopia</option>
+                  <option value="dicromasia">Dicromasia</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="retina_periferica_oi">ENFERMEDADES OCULARES</label>
+                <select id="retina_periferica_oi" name="retina_periferica_oi">
+                  <option value="">Seleccionar</option>
+                  <option value="ametropia_leve_corregida_od">
+                    AMETROPÍA LEVE CORREGIDA OJO DERECHO
+                  </option>
+                  <option value="emetropia" selected>EMÉTROPE</option>
+                  <option value="ametropia_leve_corregida_oi">
+                    AMETROPÍA LEVE CORREGIDA OJO IZQUIERDO
+                  </option>
+                  <option value="ametropia_leve_corregida_bilateral">
+                    AMETROPÍA LEVE CORREGIDA BILATERAL
+                  </option>
+                  <option value="ametropia_leve_no_corregida_od">
+                    AMETROPÍA LEVE NO CORREGIDA OJO DERECHO
+                  </option>
+                  <option value="ametropia_leve_no_corregida_oi">
+                    AMETROPÍA LEVE NO CORREGIDA OJO IZQUIERDO
+                  </option>
+                  <option value="ametropia_leve_no_corregida_bilateral">
+                    AMETROPÍA LEVE NO CORREGIDA BILATERAL
+                  </option>
+                  <option value="ametropia_moderada_corregida_od">
+                    AMETROPÍA MODERADA CORREGIDA OJO DERECHO
+                  </option>
+                  <option value="ametropia_moderada_corregida_oi">
+                    AMETROPÍA MODERADA CORREGIDA OJO IZQUIERDO
+                  </option>
+                  <option value="ametropia_moderada_corregida_bilateral">
+                    AMETROPÍA MODERADA CORREGIDA BILATERAL
+                  </option>
+                  <option value="ametropia_moderada_no_corregida_od">
+                    AMETROPÍA MODERADA NO CORREGIDA OJO DERECHO
+                  </option>
+                  <option value="ametropia_moderada_no_corregida_oi">
+                    AMETROPÍA MODERADA NO CORREGIDA OJO IZQUIERDO
+                  </option>
+                  <option value="ametropia_moderada_no_corregida_bilateral">
+                    AMETROPÍA MODERADA NO CORREGIDA BILATERAL
+                  </option>
+                  <option value="ametropia_severa_corregida_od">
+                    AMETROPÍA SEVERA CORREGIDA OJO DERECHO
+                  </option>
+                  <option value="ametropia_severa_corregida_oi">
+                    AMETROPÍA SEVERA CORREGIDA OJO IZQUIERDO
+                  </option>
+                  <option value="ametropia_severa_corregida_bilateral">
+                    AMETROPÍA SEVERA CORREGIDA BILATERAL
+                  </option>
+                  <option value="ametropia_severa_no_corregida_od">
+                    AMETROPÍA SEVERA NO CORREGIDA OJO DERECHO
+                  </option>
+                  <option value="ametropia_severa_no_corregida_oi">
+                    AMETROPÍA SEVERA NO CORREGIDA OJO IZQUIERDO
+                  </option>
+                  <option value="ametropia_severa_no_corregida_bilateral">
+                    AMETROPÍA SEVERA NO CORREGIDA BILATERAL
+                  </option>
+                  <option value="miopia_leve_bilateral">
+                    MIOPÍA LEVE BILATERAL
+                  </option>
+                  <option value="hipermetropia_moderada_oi">
+                    HIPERMETROPÍA MODERADA OJO IZQUIERDO
+                  </option>
+                  <option value="astigmatismo_leve_bilateral">
+                    ASTIGMATISMO LEVE BILATERAL
+                  </option>
+                  <option value="presbicia">PRESBICIA</option>
+                  <option value="trastorno_percepcion_color">
+                    TRASTORNO DE LA PERCEPCIÓN DEL COLOR
+                  </option>
+                  <option value="ambliopia_oi">AMBLIOPÍA OJO IZQUIERDO</option>
+                  <option value="pterigion_moderado_od">
+                    PTERIGIÓN MODERADO OJO DERECHO
+                  </option>
+                  <option value="catarata">CATARATA</option>
+                  <option value="trastorno_pelcula_lagrimal_oi">
+                    TRASTORNO DE LA PELÍCULA LAGRIMAL Y OJO SECO
+                  </option>
+                  <option value="queratocono_od">
+                    QUERATOCONO OJO DERECHO
+                  </option>
+                  <option value="defecto_campo_visual_oi">
+                    DEFECTO DE CAMPO VISUAL (HEMIANOPSIA)
+                  </option>
+                  <option value="estrabismo_bilateral">
+                    ESTRABISMO BILATERAL
+                  </option>
+                  <option value="nistagmo">NISTAGMO</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="reflejos_pupiles_od">REFLEJOS PUPILARES</label>
+                <select id="reflejos_pupiles_od" name="reflejos_pupiles_od">
+                  <option value="">Seleccionar</option>
+                  <option value="normorreactivos" selected>
+                    NORMORREACTIVOS
+                  </option>
+                  <option value="reflejo_ausente">REFLEJO AUSENTE</option>
+                  <option value="miosis">MIOSIS</option>
+                  <option value="midriasis">MIDRIASIS</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="vision_colores"
+                  >USO DE LENTES CORRECTORES(LENTES)</label
+                >
+                <select id="vision_colores" name="vision_colores">
+                  <option value="">Seleccionar</option>
+                  <option value="lentes_si">SI</option>
+                  <option value="lentes_no" selected>NO</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="vision_colores">FONDO DE OJO(FUNDOSCOPÍA)</label>
+                <select id="vision_colores" name="vision_colores">
+                  <option value="">Seleccionar</option>
+                  <option value="fondo_ojo_conservado" selected>
+                    Conservado
+                  </option>
+                  <option value="fondo_ojo_no_conservado">No Conservado</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="vision_colores">PRESIÓN INTRAOCULAR</label>
+                <select id="vision_colores" name="vision_colores">
+                  <option value="">Seleccionar</option>
+                  <option value="presion_iod_na" selected>NA</option>
+                  <option value="presion_iod_aaa">AAA</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="oftalmologiaObservaciones">Observaciones</label>
+            <textarea
+              id="oftalmologiaObservaciones"
+              name="oftalmologiaObservaciones"
+              rows="3"
+              placeholder="Observaciones del examen..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="oftalmologiaDiagnostico">Diagnóstico</label>
+            <textarea
+              id="oftalmologiaDiagnostico"
+              name="oftalmologiaDiagnostico"
+              rows="2"
+              placeholder="Diagnóstico basado en los resultados..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="recomendaciones_oftal">Recomendaciones</label>
+            <textarea
+              id="recomendaciones_oftal"
+              name="recomendaciones_oftal"
+              rows="2"
+              placeholder="Recomendaciones para el paciente..."
+            ></textarea>
+          </div>
+
+          <div
+            style="
+              display: flex;
+              gap: 1rem;
+              justify-content: flex-end;
+              margin-top: 2rem;
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cerrarModalOftalmologia()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Guardar Resultados
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Procesar EKG -->
+    <div id="modalEKG" class="modal">
+      <div class="modal-content" style="max-width: 800px">
+        <div class="modal-header">
+          <h3 class="modal-title">Resultados de EKG</h3>
+          <span class="close" onclick="cerrarModalEKG()">&times;</span>
+        </div>
+        <form id="formEKG">
+          <div class="form-group">
+            <label
+              >Paciente:
+              <strong id="ekgPaciente">Carlos Rodríguez</strong></label
+            >
+          </div>
+          <div class="card-header">
+            <h4>ANTECEDENTES CARDIOVASCULARES</h4>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="ekgRitmo">Hipertensión Arterial</label>
+              <select id="ekgRitmo">
+                <option value="siekg" selected>PA NORMAL</option>
+                <option value="noekg">A</option>
+                <option value="noekg">B</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ekgRitmo">IMC</label>
+              <select id="ekgRitmo">
+                <option value="siekg" selected>SOBREPESO</option>
+                <option value="siekg">PESO NORMAL</option>
+                <option value="noekg">BAJO PESO</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ekgRitmo">Diabetes</label>
+              <select id="ekgRitmo">
+                <option value="siekg">SI</option>
+                <option value="noekg" selected>NO</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ekgRitmo">Tabaquismo</label>
+              <select id="ekgRitmo">
+                <option value="siekg">SI</option>
+                <option value="noekg" selected>NO</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ekgRitmo">Sedentarismo</label>
+              <select id="ekgRitmo">
+                <option value="siekg">SI</option>
+                <option value="noekg" selected>NO</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ekgRitmo">Cansancio rapido</label>
+              <select id="ekgRitmo">
+                <option value="siekg">SI</option>
+                <option value="noekg" selected>NO</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ekgRitmo">Mareos</label>
+              <select id="ekgRitmo">
+                <option value="siekg">SI</option>
+                <option value="noekg" selected>NO</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ekgRitmo">Paltitaciones</label>
+              <select id="ekgRitmo">
+                <option value="siekg">SI</option>
+                <option value="noekg" selected>NO</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ekgRitmo">Perdida de la conciencia</label>
+              <select id="ekgRitmo">
+                <option value="siekg">SI</option>
+                <option value="noekg" selected>NO</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ekgRitmo">Dislipidemia</label>
+              <select id="ekgRitmo">
+                <option value="siekg">SI</option>
+                <option value="noekg" selected>NO</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ekgRitmo">Otros</label>
+              <select id="ekgRitmo">
+                <option value="siekg">SI</option>
+                <option value="noekg" selected>NO</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ekgFrecuencia">Frecuencia Cardíaca (lpm)</label>
+              <input
+                type="number"
+                id="ekgFrecuencia"
+                min="30"
+                max="200"
+                step="1"
+              />
+            </div>
+            <div class="form-group">
+              <label for="ekgEje">Eje Eléctrico</label>
+              <select id="ekgEje">
+                <option value="">Seleccionar</option>
+                <option value="normal">Normal (0° a +90°)</option>
+                <option value="desviado_izq">Desviado a la Izquierda</option>
+                <option value="desviado_der">Desviado a la Derecha</option>
+                <option value="indeterminado">Indeterminado</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Audiometría Vía Ósea -->
+          <div class="card">
+            <div class="card-header">
+              <h4>RESULTADOS DE ELECTROCARDIOGRAMA</h4>
+            </div>
+            <div class="form-group full-width">
+              <table
+                style="
+                  width: 100%;
+                  text-align: center;
+                  border-collapse: collapse;
+                  margin: 1rem 0;
+                "
+              >
+                <tbody>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      Ritmo
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <select id="ekgRitmo">
+                        <option value="siekg" selected>SINUSAL</option>
+                        <option value="noekg">SI</option>
+                        <option value="noekg">NO</option>
+                      </select>
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      Frecuencia
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        value="70"
+                        min="0"
+                        max="150"
+                        step="5"
+                        name="osea_oi_250"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                        onblur="agregarComillas(this)"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      Int. QRS
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <select id="ekgRitmo">
+                        <option value="siekg">0.09"</option>
+                        <option value="siekg" selected>0.08"</option>
+                        <option value="siekg">0.07"</option>
+                        <option value="siekg">0.06"</option>
+                        <option value="siekg">0.05"</option>
+                        <option value="siekg">0.04"</option>
+                        <option value="siekg">-</option>
+                      </select>
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      Int. QT
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <select id="ekgRitmo">
+                        <option value="siekg">0.09"</option>
+                        <option value="siekg">0.08"</option>
+                        <option value="siekg">0.07"</option>
+                        <option value="siekg" selected>0.06"</option>
+                        <option value="siekg">0.05"</option>
+                        <option value="siekg">0.04"</option>
+                        <option value="siekg">-</option>
+                      </select>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      Onda P
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <select id="ekgRitmo">
+                        <option value="siekg">0.09"</option>
+                        <option value="siekg" selected>0.08"</option>
+                        <option value="siekg">0.07"</option>
+                        <option value="siekg">0.06"</option>
+                        <option value="siekg">0.05"</option>
+                        <option value="siekg">0.04"</option>
+                        <option value="siekg">-</option>
+                      </select>
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      Onda Q
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        value="70"
+                        min="0"
+                        max="150"
+                        step="5"
+                        name="osea_oi_250"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      Onda R
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <select id="ekgRitmo">
+                        <option value="siekg" selected>SINUSAL</option>
+                        <option value="noekg">SI</option>
+                        <option value="noekg">NO</option>
+                      </select>
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      Onda S
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        value="70"
+                        min="0"
+                        max="150"
+                        step="5"
+                        name="osea_oi_250"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      Onda T
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <select id="ekgRitmo">
+                        <option value="siekg" selected>SINUSAL</option>
+                        <option value="noekg">SI</option>
+                        <option value="noekg">NO</option>
+                      </select>
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      Onda U
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        value="70"
+                        min="0"
+                        max="150"
+                        step="5"
+                        name="osea_oi_250"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      Segm. ST
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <select id="ekgRitmo">
+                        <option value="siekg" selected>SINUSAL</option>
+                        <option value="noekg">SI</option>
+                        <option value="noekg">NO</option>
+                      </select>
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      Eje QRS
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        value="70"
+                        min="0"
+                        max="150"
+                        step="5"
+                        name="osea_oi_250"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      Int. PR
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <select id="ekgRitmo">
+                        <option value="siekg" selected>SINUSAL</option>
+                        <option value="noekg">SI</option>
+                        <option value="noekg">NO</option>
+                      </select>
+                    </td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd"></td>
+                    <td style="padding: 0.5rem; border: 1px solid #ddd">
+                      <input
+                        type="number"
+                        min="0"
+                        max="150"
+                        step="5"
+                        name="osea_oi_250"
+                        class="form-control"
+                        style="width: 80px; margin: 0 auto"
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h4>Imagen EKG:</h4>
+            </div>
+
+            <div
+              class="form-row"
+              style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+              "
+            >
+              <div class="form-group" style="margin-bottom: 15px">
+                <label for="imagenEKG" style="font-weight: bold"
+                  >Cargar imagen EKG</label
+                ><br />
+                <input
+                  type="file"
+                  id="imagenEKG"
+                  accept="image/*"
+                  style="margin-top: 8px"
+                />
+              </div>
+
+              <!-- Vista previa -->
+              <div
+                id="previewEKG"
+                style="
+                  width: 100%;
+                  max-width: 400px;
+                  height: auto;
+                  border: 2px dashed #ccc;
+                  border-radius: 10px;
+                  padding: 10px;
+                  background-color: #fafafa;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  overflow: hidden;
+                "
+              >
+                <span style="color: #777">Ninguna imagen cargada</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="ekgObservaciones">Conclusión final</label>
+            <textarea
+              id="ekgObservaciones"
+              rows="3"
+              placeholder="Observaciones del examen..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="ekgDiagnostico">Recomendaciones</label>
+            <textarea
+              id="ekgDiagnostico"
+              rows="2"
+              placeholder="Diagnóstico basado en los resultados..."
+            ></textarea>
+          </div>
+
+          <div
+            style="
+              display: flex;
+              gap: 1rem;
+              justify-content: flex-end;
+              margin-top: 2rem;
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cerrarModalEKG()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Guardar Resultados
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Procesar EKG -->
+    <div id="modalAlturaEstructural" class="modal">
+      <div class="modal-content" style="max-width: 700px">
+        <div class="modal-header">
+          <h3 class="modal-title">Altura Estructural</h3>
+          <span class="close" onclick="cerrarModalAlturaEstructural()"
+            >&times;</span
+          >
+        </div>
+        <form id="formAlturaEstructural">
+          <div class="form-group">
+            <label>Paciente: <strong id="alturaPaciente">-</strong></label>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="altura_cm">Altura (cm)</label>
+              <input
+                type="number"
+                id="altura_cm"
+                name="altura_cm"
+                step="0.1"
+                min="30"
+                max="250"
+              />
+            </div>
+            <div class="form-group">
+              <label for="peso_kg">Peso (kg)</label>
+              <input
+                type="number"
+                id="peso_kg"
+                name="peso_kg"
+                step="0.1"
+                min="2"
+                max="300"
+              />
+            </div>
+            <div class="form-group">
+              <label for="imc_calc">IMC</label>
+              <input
+                type="number"
+                id="imc_calc"
+                name="imc_calc"
+                step="0.1"
+                readonly
+                placeholder="Se puede calcular automáticamente"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="alturaHallazgos">Hallazgos</label>
+            <textarea
+              id="alturaHallazgos"
+              name="alturaHallazgos"
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="alturaConclusion">Conclusión</label>
+            <textarea
+              id="alturaConclusion"
+              name="alturaConclusion"
+              rows="2"
+            ></textarea>
+          </div>
+          <div
+            style="
+              display: flex;
+              gap: 1rem;
+              justify-content: flex-end;
+              margin-top: 1rem;
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cerrarModalAlturaEstructural()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Guardar Resultados
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modales adicionales: Cardiología, Psicología, Espirometría, Laboratorio, Radiología, Psicosensométrico -->
+
+    <!-- Modal Cardiología -->
+    <div id="modalCardiologia" class="modal">
+      <div class="modal-content" style="max-width: 900px">
+        <div class="modal-header">
+          <h3 class="modal-title">Evaluación Cardiológica</h3>
+          <span class="close" onclick="cerrarModalCardiologia()">&times;</span>
+        </div>
+        <form id="formCardiologia">
+          <div class="form-group">
+            <label>Paciente: <strong id="cardiologiaPaciente">-</strong></label>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cardiologiaPA_s">PA (sistólica)</label>
+              <input
+                type="number"
+                id="cardiologiaPA_s"
+                name="cardiologiaPA_s"
+                min="40"
+                max="250"
+                placeholder="120"
+              />
+            </div>
+            <div class="form-group">
+              <label for="cardiologiaPA_d">PA (diastólica)</label>
+              <input
+                type="number"
+                id="cardiologiaPA_d"
+                name="cardiologiaPA_d"
+                min="20"
+                max="150"
+                placeholder="80"
+              />
+            </div>
+            <div class="form-group">
+              <label for="cardiologiaFC">Frecuencia cardíaca (lpm)</label>
+              <input
+                type="number"
+                id="cardiologiaFC"
+                name="cardiologiaFC"
+                min="20"
+                max="200"
+                placeholder="72"
+              />
+            </div>
+            <div class="form-group">
+              <label for="cardiologiaRitmo">Ritmo</label>
+              <select id="cardiologiaRitmo" name="cardiologiaRitmo">
+                <option value="">Seleccionar</option>
+                <option value="sinusal">Sinusal</option>
+                <option value="arr">Arrítmico</option>
+                <option value="fibrilacion">Fibrilación</option>
+                <option value="otros">Otros</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><h4>Examen físico</h4></div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="cardiologiaAuscult">Auscultación</label>
+                <select id="cardiologiaAuscult" name="cardiologiaAuscult">
+                  <option value="">Seleccionar</option>
+                  <option value="normal">Normal</option>
+                  <option value="soplo">Soplo</option>
+                  <option value="galope">Galope</option>
+                  <option value="otros">Otros</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="cardiologiaSoploGrado">Grado Soplo</label>
+                <select id="cardiologiaSoploGrado" name="cardiologiaSoploGrado">
+                  <option value="">-</option>
+                  <option value="I">I</option>
+                  <option value="II">II</option>
+                  <option value="III">III</option>
+                  <option value="IV">IV</option>
+                  <option value="V">V</option>
+                  <option value="VI">VI</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="cardiologiaEdemas">Edemas periféricos</label>
+                <select id="cardiologiaEdemas" name="cardiologiaEdemas">
+                  <option value="">Seleccionar</option>
+                  <option value="no">No</option>
+                  <option value="si">Sí</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="cardiologiaHallazgos">Hallazgos (descritos)</label>
+            <textarea
+              id="cardiologiaHallazgos"
+              name="cardiologiaHallazgos"
+              rows="4"
+              placeholder="Describir hallazgos del examen físico, signos clínicos relevantes..."
+            ></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cardiologiaEstudiosComplementarios"
+                >Estudios complementarios</label
+              >
+              <input
+                id="cardiologiaEstudiosComplementarios"
+                name="cardiologiaEstudiosComplementarios"
+                placeholder="ECG, ECO, Holter, pruebas de esfuerzo"
+              />
+            </div>
+            <div class="form-group">
+              <label for="cardiologiaFechaEstudio">Fecha estudio</label>
+              <input
+                type="date"
+                id="cardiologiaFechaEstudio"
+                name="cardiologiaFechaEstudio"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="cardiologiaImagen"
+              >Adjuntar imagen/archivo (ECG, eco)</label
+            >
+            <input
+              type="file"
+              id="cardiologiaImagen"
+              name="cardiologiaImagen"
+              accept="image/*,.pdf"
+            />
+            <div id="previewCardio" style="margin-top: 8px">
+              <span style="color: #777">Ninguna imagen cargada</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="cardiologiaConclusion">Conclusión/Diagnóstico</label>
+            <textarea
+              id="cardiologiaConclusion"
+              name="cardiologiaConclusion"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="cardiologiaRecomendaciones">Recomendaciones</label>
+            <textarea
+              id="cardiologiaRecomendaciones"
+              name="cardiologiaRecomendaciones"
+              rows="2"
+            ></textarea>
+          </div>
+
+          <div
+            style="
+              display: flex;
+              gap: 1rem;
+              justify-content: flex-end;
+              margin-top: 1rem;
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cerrarModalCardiologia()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Guardar Resultados
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Psicología -->
+    <div id="modalPsicologia" class="modal">
+      <div class="modal-content" style="max-width: 800px">
+        <div class="modal-header">
+          <h3 class="modal-title">Evaluación Psicológica</h3>
+          <span class="close" onclick="cerrarModalPsicologia()">&times;</span>
+        </div>
+        <form id="formPsicologia">
+          <div class="form-group">
+            <label>Paciente: <strong id="psicologiaPaciente">-</strong></label>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="psicoEstado">Estado emocional</label>
+              <select id="psicoEstado" name="psicoEstado">
+                <option value="">Seleccionar</option>
+                <option value="estable">Estable</option>
+                <option value="ansioso">Ansioso</option>
+                <option value="depresivo">Depresivo</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="psicoObservaciones">Observaciones clínicas</label>
+              <textarea
+                id="psicoObservaciones"
+                name="psicoObservaciones"
+                rows="3"
+              ></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="psicoConclusion"
+              >Conclusión / Aptitud Psicológica</label
+            >
+            <select id="psicoConclusion" name="psicoConclusion">
+              <option value="">Seleccionar</option>
+              <option value="apto">Apto</option>
+              <option value="apto_con_restricciones">
+                Apto con restricciones
+              </option>
+              <option value="no_apto">No apto</option>
+            </select>
+          </div>
+          <div
+            style="
+              display: flex;
+              gap: 1rem;
+              justify-content: flex-end;
+              margin-top: 1rem;
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cerrarModalPsicologia()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Guardar Resultados
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Espirometría -->
+    <div id="modalEspirometria" class="modal">
+      <div class="modal-content" style="max-width: 900px">
+        <div class="modal-header">
+          <h3 class="modal-title">Resultados de Espirometría</h3>
+          <span class="close" onclick="cerrarModalEspirometria()">&times;</span>
+        </div>
+        <form id="formEspirometria">
+          <div class="form-group">
+            <label
+              >Paciente: <strong id="espirometriaPaciente">-</strong></label
+            >
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fespirometriaFVC">FVC (L)</label>
+              <input
+                type="number"
+                id="espirometriaFVC"
+                name="espirometriaFVC"
+                step="0.01"
+              />
+            </div>
+            <div class="form-group">
+              <label for="espirometriaFEV1">FEV1 (L)</label>
+              <input
+                type="number"
+                id="espirometriaFEV1"
+                name="espirometriaFEV1"
+                step="0.01"
+              />
+            </div>
+            <div class="form-group">
+              <label for="espirometriaRatio">FEV1/FVC (%)</label>
+              <input
+                type="number"
+                id="espirometriaRatio"
+                name="espirometriaRatio"
+                step="0.1"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="espirometriaInterpretacion">Interpretación</label>
+            <select
+              id="espirometriaInterpretacion"
+              name="espirometriaInterpretacion"
+            >
+              <option value="">Seleccionar</option>
+              <option value="normal">Normal</option>
+              <option value="obstructivo">Patrón obstructivo</option>
+              <option value="restrictivo">Patrón restrictivo</option>
+              <option value="mixto">Mixto</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="espirometriaObservaciones">Observaciones</label>
+            <textarea
+              id="espirometriaObservaciones"
+              name="espirometriaObservaciones"
+              rows="3"
+            ></textarea>
+          </div>
+          <div
+            style="
+              display: flex;
+              gap: 1rem;
+              justify-content: flex-end;
+              margin-top: 1rem;
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cerrarModalEspirometria()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Guardar Resultados
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Laboratorio -->
+    <div id="modalLaboratorio" class="modal">
+      <div class="modal-content" style="max-width: 1000px">
+        <div class="modal-header">
+          <h3 class="modal-title">Resultados de Laboratorio</h3>
+          <span class="close" onclick="cerrarModalLaboratorio()">&times;</span>
+        </div>
+        <form id="formLaboratorio">
+          <div class="form-group">
+            <label>Paciente: <strong id="laboratorioPaciente">-</strong></label>
+          </div>
+
+          <div class="form-group">
+            <label>Lista de pruebas</label>
+            <table class="table" style="width: 100%">
+              <thead>
+                <tr>
+                  <th style="width: 30%">Prueba</th>
+                  <th style="width: 15%">Resultado</th>
+                  <th style="width: 15%">Unidad</th>
+                  <th style="width: 25%">Rango referencia</th>
+                  <th style="width: 10%">Obs.</th>
+                  <th style="width: 5%"></th>
+                </tr>
+              </thead>
+              <tbody id="labTableBody">
+                <tr>
+                  <td>
+                    <input
+                      name="lab_prueba[]"
+                      placeholder="Hemograma"
+                      style="width: 100%"
+                    />
+                  </td>
+                  <td><input name="lab_resultado[]" style="width: 100%" /></td>
+                  <td><input name="lab_unidad[]" style="width: 100%" /></td>
+                  <td>
+                    <input
+                      name="lab_ref[]"
+                      style="width: 100%"
+                      placeholder="Mín - Máx"
+                    />
+                  </td>
+                  <td><input name="lab_obs[]" style="width: 100%" /></td>
+                  <td style="text-align: center">
+                    <button
+                      type="button"
+                      class="btn btn-danger btn-sm"
+                      onclick="removeLabRow(this)"
+                    >
+                      -
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem">
+              <button
+                type="button"
+                class="btn btn-outline"
+                onclick="addLabRow()"
+              >
+                Agregar prueba
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="labObservaciones">Observaciones generales</label>
+            <textarea
+              id="labObservaciones"
+              name="labObservaciones"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div
+            style="
+              display: flex;
+              gap: 1rem;
+              justify-content: flex-end;
+              margin-top: 1rem;
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cerrarModalLaboratorio()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Guardar Resultados
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Radiología -->
+    <div id="modalRadiologia" class="modal">
+      <div class="modal-content" style="max-width: 1000px">
+        <div class="modal-header">
+          <h3 class="modal-title">Evaluación Radiológica</h3>
+          <span class="close" onclick="cerrarModalRadiologia()">&times;</span>
+        </div>
+        <form id="formRadiologia">
+          <div class="form-group">
+            <label>Paciente: <strong id="radiologiaPaciente">-</strong></label>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="radTipo">Tipo de estudio</label>
+              <select id="radTipo" name="radTipo">
+                <option value="">Seleccionar</option>
+                <option value="rx_torax">Radiografía de tórax</option>
+                <option value="ecografia">Ecografía</option>
+                <option value="tomografia">Tomografía</option>
+                <option value="resonancia">Resonancia</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="radFecha">Fecha del estudio</label>
+              <input type="date" id="radFecha" name="radFecha" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="radImagenes">Adjuntar imágenes</label>
+            <input
+              type="file"
+              id="radImagenes"
+              name="radImagenes"
+              accept="image/*,.dcm"
+              multiple
+              onchange="previewRadiologiaImages(event)"
+            />
+            <div
+              id="previewRadiologia"
+              style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px"
+            ></div>
+          </div>
+
+          <div class="form-group">
+            <label for="radHallazgos">Hallazgos</label>
+            <textarea
+              id="radHallazgos"
+              name="radHallazgos"
+              rows="5"
+              placeholder="Describir hallazgos radiológicos..."
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="radConclusion">Conclusión / Informe</label>
+            <textarea
+              id="radConclusion"
+              name="radConclusion"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div
+            style="
+              display: flex;
+              gap: 1rem;
+              justify-content: flex-end;
+              margin-top: 1rem;
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cerrarModalRadiologia()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Guardar Resultados
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Psicosensométrico -->
+    <div id="modalPsicosensometrico" class="modal">
+      <div class="modal-content" style="max-width: 800px">
+        <div class="modal-header">
+          <h3 class="modal-title">Evaluación Psicosensométrica</h3>
+          <span class="close" onclick="cerrarModalPsicosensometrico()"
+            >&times;</span
+          >
+        </div>
+        <form id="formPsicosensometrico">
+          <div class="form-group">
+            <label>Paciente: <strong id="psicosPaciente">-</strong></label>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="psicosPrueba">Prueba aplicada</label>
+              <input
+                id="psicosPrueba"
+                name="psicosPrueba"
+                placeholder="Nombre del test"
+              />
+            </div>
+            <div class="form-group">
+              <label for="psicosPuntaje">Puntaje</label>
+              <input
+                type="number"
+                id="psicosPuntaje"
+                name="psicosPuntaje"
+                min="0"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="psicosInterpretacion">Interpretación</label>
+            <textarea
+              id="psicosInterpretacion"
+              name="psicosInterpretacion"
+              rows="3"
+            ></textarea>
+          </div>
+          <div
+            style="
+              display: flex;
+              gap: 1rem;
+              justify-content: flex-end;
+              margin-top: 1rem;
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cerrarModalPsicosensometrico()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Guardar Resultados
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Signos Vitales -->
+    <!-- Modal Checklist de Servicios (CAMO) -->
+    <div id="modalCamo" class="modal">
+      <div class="modal-content" style="max-width: 900px">
+        <div class="modal-header">
+          <h3 class="modal-title">Checklist de Servicios</h3>
+          <span class="close" onclick="cerrarModalCamo()">&times;</span>
+        </div>
+        <form id="formCamo">
+          <div class="form-group">
+            <label>Paciente: <strong id="camoPaciente">-</strong></label>
+          </div>
+          <table class="table" style="width: 100%; border-collapse: collapse">
+            <thead>
+              <tr>
+                <th style="width: 60%">SERVICIO</th>
+                <th style="width: 20%">
+                  FIRMA DEL PROFESIONAL Y/O RESPONSABLE
+                </th>
+                <th style="width: 20%">OBS / GRUPO SANG.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1. ADMISIÓN (PISO 1)</td>
+                <td>
+                  <select name="s1">
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                    <option value="NA">NA</option>
+                  </select>
+                </td>
+                <td><input name="f1" /></td>
+              </tr>
+              <tr>
+                <td>2. LABORATORIO (PISO 1)</td>
+                <td>
+                  <select name="s2">
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                    <option value="NA">NA</option>
+                  </select>
+                </td>
+                <td><input name="f2" placeholder="Grupo sang: O+" /></td>
+              </tr>
+              <tr>
+                <td>3. TRIAJE (PISO1)</td>
+                <td>
+                  <select name="s3">
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                    <option value="NA">NA</option>
+                  </select>
+                </td>
+                <td><input name="f3" /></td>
+              </tr>
+              <tr>
+                <td>4. EKG (PISO 1)</td>
+                <td>
+                  <select name="s4">
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                    <option value="NA">NA</option>
+                  </select>
+                </td>
+                <td><input name="f4" /></td>
+              </tr>
+              <tr>
+                <td>5. ODONTOLOGÍA (PISO 1)</td>
+                <td>
+                  <select name="s5">
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                    <option value="NA">NA</option>
+                  </select>
+                </td>
+                <td><input name="f5" /></td>
+              </tr>
+              <tr>
+                <td>6. RAYOS X (PISO 1)</td>
+                <td>
+                  <select name="s6">
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                    <option value="NA">NA</option>
+                  </select>
+                </td>
+                <td><input name="f6" /></td>
+              </tr>
+              <tr>
+                <td>7. PSICOLOGÍA (PISO 2)</td>
+                <td>
+                  <select name="s7">
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                    <option value="NA">NA</option>
+                  </select>
+                </td>
+                <td><input name="f7" /></td>
+              </tr>
+              <tr>
+                <td>8. ESPIROMETRÍA (PISO 2)</td>
+                <td>
+                  <select name="s8">
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                    <option value="NA">NA</option>
+                  </select>
+                </td>
+                <td><input name="f8" /></td>
+              </tr>
+              <tr>
+                <td>9. AUDIOMETRÍA (PISO 2)</td>
+                <td>
+                  <select name="s9">
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                    <option value="NA">NA</option>
+                  </select>
+                </td>
+                <td><input name="f9" /></td>
+              </tr>
+              <tr>
+                <td>10. EVALUACIÓN MEDICA (PISO 2)</td>
+                <td>
+                  <select name="s10">
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                    <option value="NA">NA</option>
+                  </select>
+                </td>
+                <td><input name="f10" /></td>
+              </tr>
+              <tr>
+                <td>11. ALTURA ESTRUCTURAL (&gt;1.8M)</td>
+                <td>
+                  <select name="s11">
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                    <option value="NA">NA</option>
+                  </select>
+                </td>
+                <td><input name="f11" /></td>
+              </tr>
+              <tr>
+                <td>12. PSICOSENSOMETRICO (EXT)</td>
+                <td>
+                  <select name="s12">
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                    <option value="NA">NA</option>
+                  </select>
+                </td>
+                <td><input name="f12" /></td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  EXAMENES ADICIONALES Y/O COMENTARIOS<br /><textarea
+                    name="comentarios"
+                    style="width: 100%; height: 80px"
+                  ></textarea>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div
+            style="
+              display: flex;
+              gap: 1rem;
+              justify-content: flex-end;
+              margin-top: 1rem;
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cerrarModalCamo()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Guardar Checklist
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="modalSignosVitales" class="modal">
+      <div class="modal-content" style="max-width: 700px">
+        <div class="modal-header">
+          <h3 class="modal-title">Registro de Signos Vitales</h3>
+          <span class="close" onclick="cerrarModalSignosVitales()"
+            >&times;</span
+          >
+        </div>
+        <form id="formSignosVitales">
+          <div class="form-group">
+            <label
+              >Paciente: <strong id="signosVitalesPaciente">-</strong></label
+            >
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="sv_ta_s">PA (sistólica) mmHg</label>
+              <input
+                type="number"
+                id="sv_ta_s"
+                name="sv_ta_s"
+                min="30"
+                max="300"
+              />
+            </div>
+            <div class="form-group">
+              <label for="sv_ta_d">PA (diastólica) mmHg</label>
+              <input
+                type="number"
+                id="sv_ta_d"
+                name="sv_ta_d"
+                min="20"
+                max="200"
+              />
+            </div>
+            <div class="form-group">
+              <label for="sv_fc">Frecuencia cardíaca (lpm)</label>
+              <input type="number" id="sv_fc" name="sv_fc" min="20" max="200" />
+            </div>
+            <div class="form-group">
+              <label for="sv_fr">Frecuencia respiratoria (rpm)</label>
+              <input type="number" id="sv_fr" name="sv_fr" min="6" max="60" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="sv_temp">Temperatura (°C)</label>
+              <input
+                type="number"
+                id="sv_temp"
+                name="sv_temp"
+                step="0.1"
+                min="30"
+                max="45"
+              />
+            </div>
+            <div class="form-group">
+              <label for="sv_spo2">SpO2 (%)</label>
+              <input
+                type="number"
+                id="sv_spo2"
+                name="sv_spo2"
+                min="50"
+                max="100"
+              />
+            </div>
+            <div class="form-group">
+              <label for="sv_peso">Peso (kg)</label>
+              <input
+                type="number"
+                id="sv_peso"
+                name="sv_peso"
+                step="0.1"
+                min="2"
+                max="500"
+              />
+            </div>
+            <div class="form-group">
+              <label for="sv_altura">Altura (cm)</label>
+              <input
+                type="number"
+                id="sv_altura"
+                name="sv_altura"
+                step="0.1"
+                min="30"
+                max="250"
+              />
+            </div>
+            <div class="form-group">
+              <label for="sv_imc">IMC</label>
+              <input
+                type="number"
+                id="sv_imc"
+                name="sv_imc"
+                step="0.1"
+                readonly
+                placeholder="Calculado automáticamente"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="sv_cintura">Circunferencia de cintura (cm)</label>
+              <input
+                type="number"
+                id="sv_cintura"
+                name="sv_cintura"
+                step="0.1"
+                min="0"
+                max="300"
+              />
+            </div>
+            <div class="form-group" style="flex: 1">
+              <label for="sv_observaciones">Observaciones</label>
+              <textarea
+                id="sv_observaciones"
+                name="sv_observaciones"
+                rows="3"
+                placeholder="Observaciones del registro..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div
+            style="
+              display: flex;
+              gap: 1rem;
+              justify-content: flex-end;
+              margin-top: 1rem;
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cerrarModalSignosVitales()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Guardar Signos Vitales
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="../assets/js/database.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/session.js"></script>
+    <script src="../assets/js/sidebar.js"></script>
+    <script src="../assets/js/examenes.js"></script>
+    <script></script>
+    <script>
+      function agregarComillas(inputElement) {
+        // Obtenemos el valor actual del campo
+        let valor = inputElement.value;
+
+        // Verificamos si hay un valor y si no termina ya en comillas
+        if (valor && !valor.endsWith('"')) {
+          // Reemplazamos el valor del campo con el número y las comillas dobles
+          inputElement.value = valor + '"';
+        }
+      }
+
+      function quitarComillas(inputElement) {
+        // Si el usuario vuelve a hacer clic en el campo (focus), quitamos las comillas
+        // para que solo se muestre el número y el usuario pueda editarlo.
+        let valor = inputElement.value;
+        if (valor && valor.endsWith('"')) {
+          // Quitamos el último carácter (las comillas)
+          inputElement.value = valor.slice(0, -1);
+        }
+      }
+
+      // Opcional: Para mejorar la experiencia de usuario, puedes añadir el evento 'onfocus'
+      // al campo input en el HTML, así: onfocus="quitarComillas(this)"
+    </script>
+
+    <!--script  para cargar imagen de ekg-->
+    <script>
+      document
+        .getElementById("imagenEKG")
+        .addEventListener("change", function (event) {
+          const file = event.target.files[0];
+          const preview = document.getElementById("previewEKG");
+
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              preview.innerHTML = `<img src="${e.target.result}" 
+                                      alt="Imagen EKG" 
+                                      style="max-width:100%; height:auto; border-radius:8px;">`;
+            };
+            reader.readAsDataURL(file);
+          } else {
+            preview.innerHTML =
+              '<span style="color:#777;">Ninguna imagen cargada</span>';
+          }
+        });
+    </script>
+
+    <!-- Scripts auxiliares: laboratorio y radiología -->
+    <script>
+      function addLabRow() {
+        const tbody = document.getElementById("labTableBody");
+        if (!tbody) return;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+                <td><input name="lab_prueba[]" placeholder="Prueba" style="width:100%;"></td>
+                <td><input name="lab_resultado[]" style="width:100%;"></td>
+                <td><input name="lab_unidad[]" style="width:100%;"></td>
+                <td><input name="lab_ref[]" style="width:100%;" placeholder="Mín - Máx"></td>
+                <td><input name="lab_obs[]" style="width:100%;"></td>
+                <td style="text-align:center;"><button type="button" class="btn btn-danger btn-sm" onclick="removeLabRow(this)">-</button></td>
+            `;
+        tbody.appendChild(tr);
+      }
+
+      function removeLabRow(btn) {
+        const tr = btn.closest("tr");
+        if (tr) tr.remove();
+      }
+
+      function previewRadiologiaImages(event) {
+        const files = event.target.files;
+        const preview = document.getElementById("previewRadiologia");
+        if (!preview) return;
+        preview.innerHTML = "";
+        Array.from(files).forEach((file) => {
+          if (!file.type.startsWith("image/")) return;
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            img.style.maxWidth = "120px";
+            img.style.borderRadius = "6px";
+            img.style.border = "1px solid #ddd";
+            preview.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      // Preview para cardiología
+      document
+        .getElementById("cardiologiaImagen")
+        ?.addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          const prev = document.getElementById("previewCardio");
+          if (!prev) return;
+          if (!file) {
+            prev.innerHTML =
+              '<span style="color:#777;">Ninguna imagen cargada</span>';
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = function (ev) {
+            prev.innerHTML = `<img src="${ev.target.result}" style="max-width:180px; border-radius:6px; border:1px solid #ddd;">`;
+          };
+          reader.readAsDataURL(file);
+        });
+    </script>
+  </body>
+</html>

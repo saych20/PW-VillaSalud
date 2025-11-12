@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Empresa - Sistema Policlínico</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Pantalla de bienvenida / landing -->
+    <div id="welcomeOverlay" class="welcome-overlay">
+        <div class="welcome-card">
+            <div class="welcome-logo">
+                <i class="fas fa-clinic-medical"></i>
+            </div>
+            <h2>Bienvenido a Policlínico Villa Salud SRL</h2>
+            <p class="welcome-sub">Gestión rápida y segura de exámenes médicos ocupacionales. Programa, procesa y publica resultados en PDF.</p>
+            <div class="welcome-actions">
+                <button id="btnStart" class="btn btn-primary">Empezar</button>
+                <button id="btnSkip" class="btn btn-secondary">Cerrar</button>
+            </div>
+            <label class="welcome-hide">
+                <input type="checkbox" id="dontShowWelcome"> No mostrar nuevamente
+            </label>
+        </div>
+    </div>
+    
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-building"></i> [Empresa]</h2>
+                <p id="empresaNombre">Nombre de la Empresa</p>
+            </div>
+            <div class="sidebar-nav">
+                <a href="dashboard-empresa.html" class="nav-item active">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="trabajadores.html" class="nav-item">
+                    <i class="fas fa-users"></i> Mis Trabajadores
+                </a>
+                <a href="examenes-empresa.html" class="nav-item">
+                    <i class="fas fa-file-medical-alt"></i> Exámenes EMO
+                </a>
+                <a href="reportes-empresa.html" class="nav-item">
+                    <i class="fas fa-chart-bar"></i> Reportes
+                </a>
+                <a href="#" class="nav-item logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1>Panel de Empresa</h1>
+                <div class="user-info">
+                    <span id="empresaInfo">Bienvenido</span>
+                    <div class="user-avatar">EM</div>
+                </div>
+            </div>
+
+            <!-- Estadísticas de la empresa -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTrabajadores">0</div>
+                    <div class="stat-label">Trabajadores Activos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalExamenes">0</div>
+                    <div class="stat-label">Exámenes Realizados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="examenesPendientes">0</div>
+                    <div class="stat-label">Exámenes Pendientes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="examenesCompletados">0</div>
+                    <div class="stat-label">EMOs Completos</div>
+                </div>
+            </div>
+
+            <!-- Acciones rápidas -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Acciones Rápidas</h3>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <button class="btn btn-primary" onclick="verTodosTrabajadores()">
+                        <i class="fas fa-users"></i> Ver Todos los Trabajadores
+                    </button>
+                    <button class="btn btn-success" onclick="descargarReporteCompleto()">
+                        <i class="fas fa-download"></i> Descargar Reporte Completo
+                    </button>
+                    <button class="btn btn-info" onclick="verExamenesPendientes()">
+                        <i class="fas fa-clock"></i> Exámenes Pendientes
+                    </button>
+                    <button class="btn btn-warning" onclick="exportarDatos()">
+                        <i class="fas fa-file-export"></i> Exportar Datos
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lista de trabajadores recientes -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Trabajadores Recientes</h3>
+                    <button class="btn btn-primary" onclick="verTodosTrabajadores()">
+                        <i class="fas fa-users"></i> Ver Todos
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>DNI</th>
+                                <th>Nombre Completo</th>
+                                <th>Tipo Examen</th>
+                                <th>Fecha</th>
+                                <th>Estado EMO</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trabajadoresRecientesTable">
+                            <!-- Los datos se cargarán dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Resumen de exámenes por tipo -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Resumen de Exámenes por Tipo</h3>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div class="card" style="margin: 0;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-user-plus"></i> Pre-Ocupacional</h4>
+                        </div>
+                        <div class="stat-number" id="preOcupacionalCount">0</div>
+                        <div class="stat-label">Exámenes</div>
+                    </div>
+                    <div class="card" style="margin: 0;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-calendar-alt"></i> Periódico</h4>
+                        </div>
+                        <div class="stat-number" id="periodicoCount">0</div>
+                        <div class="stat-label">Exámenes</div>
+                    </div>
+                    <div class="card" style="margin: 0;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-user-minus"></i> Retiro</h4>
+                        </div>
+                        <div class="stat-number" id="retiroCount">0</div>
+                        <div class="stat-label">Exámenes</div>
+                    </div>
+                    <div class="card" style="margin: 0;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-arrow-up"></i> Altura</h4>
+                        </div>
+                        <div class="stat-number" id="alturaCount">0</div>
+                        <div class="stat-label">Exámenes</div>
+                    </div>
+                    <div class="card" style="margin: 0;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-brain"></i> Psicosensométrico</h4>
+                        </div>
+                        <div class="stat-number" id="psicosensometricoCount">0</div>
+                        <div class="stat-label">Exámenes</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script src="../assets/js/empresa.js"></script>
+    
+    <script>
+        // Control del overlay de bienvenida
+        document.addEventListener('DOMContentLoaded', () => {
+            const welcome = document.getElementById('welcomeOverlay');
+            const btnStart = document.getElementById('btnStart');
+            const btnSkip = document.getElementById('btnSkip');
+            const dontShow = document.getElementById('dontShowWelcome');
+
+            try {
+                const hide = localStorage.getItem('policlinico_hide_welcome');
+                if (hide === '1') {
+                    if (welcome) welcome.style.display = 'none';
+                } else {
+                    if (welcome) welcome.style.display = 'flex';
+                }
+            } catch (e) { 
+                if (welcome) welcome.style.display = 'flex'; 
+            }
+
+            if (btnStart) btnStart.addEventListener('click', () => {
+                if (dontShow && dontShow.checked) localStorage.setItem('policlinico_hide_welcome', '1');
+                if (welcome) welcome.style.display = 'none';
+            });
+            
+            if (btnSkip) btnSkip.addEventListener('click', () => {
+                if (dontShow && dontShow.checked) localStorage.setItem('policlinico_hide_welcome', '1');
+                if (welcome) welcome.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

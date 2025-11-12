@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - Sistema Policlínico</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-user-md"></i> [Usuario]</h2>
+                <p id="userRole">[Rol]</p>
+            </div>
+            <div class="sidebar-nav">
+                <a href="dashboard-medico.html" class="nav-item" id="dashboardLink">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="pacientes.html" class="nav-item">
+                    <i class="fas fa-users"></i> Pacientes
+                </a>
+                <a href="examenes.html" class="nav-item">
+                    <i class="fas fa-stethoscope"></i> Exámenes
+                </a>
+                <a href="reportes.html" class="nav-item active">
+                    <i class="fas fa-chart-bar"></i> Reportes
+                </a>
+                <a href="#" class="nav-item logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1>Reportes y Estadísticas</h1>
+                <div class="user-info">
+                    <button class="btn btn-primary" onclick="generarReportePersonalizado()">
+                        <i class="fas fa-file-alt"></i> Reporte Personalizado
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtros de fecha -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Período de Análisis</h3>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fechaInicio">Fecha Inicio</label>
+                        <input type="date" id="fechaInicio" onchange="actualizarReportes()">
+                    </div>
+                    <div class="form-group">
+                        <label for="fechaFin">Fecha Fin</label>
+                        <input type="date" id="fechaFin" onchange="actualizarReportes()">
+                    </div>
+                    <div class="form-group">
+                        <label for="tipoReporte">Tipo de Reporte</label>
+                        <select id="tipoReporte" onchange="cambiarTipoReporte()">
+                            <option value="general">General</option>
+                            <option value="financiero">Financiero</option>
+                            <option value="pacientes">Pacientes</option>
+                            <option value="examenes">Exámenes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-success" onclick="actualizarReportes()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estadísticas generales -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPacientes">1,245</div>
+                    <div class="stat-label">Total Pacientes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="examenesProgramados">3,567</div>
+                    <div class="stat-label">Exámenes Programados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalExamenes">2,189</div>
+                    <div class="stat-label">Exámenes Realizados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="ingresosTotales">$45,678</div>
+                    <div class="stat-label">Ingresos Totales</div>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div style="display: grid; grid-template-columns: 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <!-- Gráfico de tipos de exámenes -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Distribución de Exámenes</h3>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <canvas id="chartExamenes" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            
+
+            <!-- Reporte de exámenes -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Reporte de Exámenes</h3>
+                    <div>
+                        <button class="btn btn-success" onclick="exportarReporteExamenes()">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Tipo de Examen</th>
+                                <th>Cantidad</th>
+                                <th>Completados</th>
+                                <th>Pendientes</th>
+                                <th>Promedio Tiempo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reporteExamenesTable">
+                            <tr>
+                                <td>Audiometría</td>
+                                <td>45</td>
+                                <td>42</td>
+                                <td>3</td>
+                                <td>25 min</td>
+                            </tr>
+                            <tr>
+                                <td>Oftalmología</td>
+                                <td>38</td>
+                                <td>35</td>
+                                <td>3</td>
+                                <td>30 min</td>
+                            </tr>
+                            <tr>
+                                <td>EKG</td>
+                                <td>52</td>
+                                <td>50</td>
+                                <td>2</td>
+                                <td>15 min</td>
+                            </tr>
+                            <tr>
+                                <td>Laboratorio</td>
+                                <td>89</td>
+                                <td>85</td>
+                                <td>4</td>
+                                <td>45 min</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Reporte financiero -->
+            <div class="card" id="reporteFinanciero" style="display: none;">
+                <div class="card-header">
+                    <h3 class="card-title">Reporte Financiero</h3>
+                    <div>
+                        <button class="btn btn-success" onclick="exportarReporteFinanciero()">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Concepto</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unitario</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reporteFinancieroTable">
+                            <tr>
+                                <td>Consultas Médicas</td>
+                                <td>150</td>
+                                <td>$50</td>
+                                <td>$7,500</td>
+                            </tr>
+                            <tr>
+                                <td>Exámenes de Audiometría</td>
+                                <td>45</td>
+                                <td>$80</td>
+                                <td>$3,600</td>
+                            </tr>
+                            <tr>
+                                <td>Exámenes de Oftalmología</td>
+                                <td>38</td>
+                                <td>$75</td>
+                                <td>$2,850</td>
+                            </tr>
+                            <tr>
+                                <td>Exámenes de EKG</td>
+                                <td>52</td>
+                                <td>$60</td>
+                                <td>$3,120</td>
+                            </tr>
+                            <tr>
+                                <td>Exámenes de Laboratorio</td>
+                                <td>89</td>
+                                <td>$40</td>
+                                <td>$3,560</td>
+                            </tr>
+                            <tr style="font-weight: bold; background: var(--light-gray);">
+                                <td colspan="3">TOTAL</td>
+                                <td>$20,630</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Reporte Personalizado -->
+    <div id="modalReportePersonalizado" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Generar Reporte Personalizado</h3>
+                <span class="close" onclick="cerrarModalReportePersonalizado()">&times;</span>
+            </div>
+            <form id="formReportePersonalizado">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reporteTipo">Tipo de Reporte *</label>
+                        <select id="reporteTipo" required>
+                            <option value="">Seleccionar tipo</option>
+                            <option value="pacientes">Pacientes</option>
+                            <option value="examenes">Exámenes</option>
+                            <option value="financiero">Financiero</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reporteFormato">Formato *</label>
+                        <select id="reporteFormato" required>
+                            <option value="">Seleccionar formato</option>
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reporteFechaInicio">Fecha Inicio *</label>
+                        <input type="date" id="reporteFechaInicio" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reporteFechaFin">Fecha Fin *</label>
+                        <input type="date" id="reporteFechaFin" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reporteFiltros">Filtros Adicionales</label>
+                    <textarea id="reporteFiltros" rows="3" placeholder="Especificar filtros adicionales..."></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalReportePersonalizado()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Generar Reporte</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/session.js"></script>
+    <script src="../assets/js/sidebar.js"></script>
+    <script src="../assets/js/reportes.js"></script>
+</body>
+</html>

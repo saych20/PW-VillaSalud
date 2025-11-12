@@ -1,0 +1,298 @@
+    1→<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Administrador - Policlínico Villa Salud SRL</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Pantalla de bienvenida / landing -->
+    <div id="welcomeOverlay" class="welcome-overlay">
+        <div class="welcome-card">
+            <div class="welcome-logo">
+                <i class="fas fa-clinic-medical"></i>
+            </div>
+            <h2>Bienvenido a Policlínico Villa Salud SRL</h2>
+            <p class="welcome-sub">Gestión rápida y segura de exámenes médicos ocupacionales. Programa, procesa y publica resultados en PDF.</p>
+            <div class="welcome-actions">
+                <button id="btnStart" class="btn btn-primary">Empezar</button>
+                <button id="btnSkip" class="btn btn-secondary">Cerrar</button>
+            </div>
+            <label class="welcome-hide">
+                <input type="checkbox" id="dontShowWelcome"> No mostrar nuevamente
+            </label>
+        </div>
+    </div>
+    
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-user-shield"></i> [Administrador]</h2>
+                <p>Administrador del Sistema</p>
+            </div>
+            <div class="sidebar-nav">
+                <a href="dashboard-admin.html" class="nav-item active">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="usuarios.html" class="nav-item">
+                    <i class="fas fa-users-cog"></i> Gestión de Usuarios
+                </a>
+                <a href="roles-permisos.html" class="nav-item">
+                    <i class="fas fa-shield-alt"></i> Roles y Permisos
+                </a>
+                <a href="pacientes.html" class="nav-item">
+                    <i class="fas fa-users"></i> Pacientes
+                </a>
+                <a href="empresas.html" class="nav-item">
+                    <i class="fas fa-building"></i> Empresas
+                </a>
+                <a href="examenes.html" class="nav-item">
+                    <i class="fas fa-stethoscope"></i> Exámenes
+                </a>
+                <a href="reportes.html" class="nav-item">
+                    <i class="fas fa-chart-bar"></i> Reportes
+                </a>
+                <a href="interconsulta.html" class="nav-item">
+                    <i class="fas fa-file-medical"></i> Hoja de Interconsulta
+                </a>
+                <a href="configuracion.html" class="nav-item">
+                    <i class="fas fa-cogs"></i> Configuración
+                </a>
+                <a href="notificaciones.html" class="nav-item">
+                    <i class="fas fa-bell"></i> Notificaciones
+                </a>
+                <a href="chat.html" class="nav-item">
+                    <i class="fas fa-comments"></i> Chat Interno
+                </a>
+                <a href="inventario.html" class="nav-item">
+                    <i class="fas fa-boxes"></i> Inventario
+                </a>
+                <a href="backup.html" class="nav-item">
+                    <i class="fas fa-database"></i> Backup
+                </a>
+                <a href="#" class="nav-item logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1>Panel de Administración</h1>
+                <div class="user-info">
+                    <span>Bienvenido, Administrador</span>
+                    <div class="user-avatar">AD</div>
+                </div>
+            </div>
+
+            <!-- Estadísticas del sistema -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalUsuarios">25</div>
+                    <div class="stat-label">Usuarios Activos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPacientes">1,245</div>
+                    <div class="stat-label">Pacientes Registrados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCitas">3,567</div>
+                    <div class="stat-label">Exámenes Programados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalExamenes">2,189</div>
+                    <div class="stat-label">Exámenes Realizados</div>
+                </div>
+            </div>
+
+            <!-- Acciones rápidas de administración -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Acciones Rápidas</h3>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <button class="btn btn-primary" onclick="crearNuevoUsuario()">
+                        <i class="fas fa-user-plus"></i> Nuevo Usuario
+                    </button>
+                    <button class="btn btn-success" onclick="configurarRoles()">
+                        <i class="fas fa-shield-alt"></i> Configurar Roles
+                    </button>
+                    <button class="btn btn-info" onclick="verLogsSistema()">
+                        <i class="fas fa-list-alt"></i> Ver Logs
+                    </button>
+                    <button class="btn btn-warning" onclick="realizarBackup()">
+                        <i class="fas fa-database"></i> Backup
+                    </button>
+                    <button class="btn btn-secondary" onclick="configurarSistema()">
+                        <i class="fas fa-cogs"></i> Configuración
+                    </button>
+                    <button class="btn btn-danger" onclick="mantenimientoSistema()">
+                        <i class="fas fa-tools"></i> Mantenimiento
+                    </button>
+                </div>
+            </div>
+
+            <!-- Usuarios recientes -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Usuarios Recientes</h3>
+                    <button class="btn btn-primary" onclick="verTodosLosUsuarios()">
+                        <i class="fas fa-users"></i> Ver Todos
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Rol</th>
+                                <th>Último Acceso</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usuariosRecientesTable">
+                            <tr>
+                                <td>Dr. Juan García</td>
+                                <td><span class="badge badge-primary">Médico</span></td>
+                                <td>Hace 5 min</td>
+                                <td><span class="badge badge-success">Activo</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm">Ver</button>
+                                    <button class="btn btn-warning btn-sm">Editar</button>
+                                    <button class="btn btn-danger btn-sm">Desactivar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>María López</td>
+                                <td><span class="badge badge-info">Recepcionista</span></td>
+                                <td>Hace 15 min</td>
+                                <td><span class="badge badge-success">Activo</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm">Ver</button>
+                                    <button class="btn btn-warning btn-sm">Editar</button>
+                                    <button class="btn btn-danger btn-sm">Desactivar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Actividad del sistema -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Actividad del Sistema</h3>
+                    <button class="btn btn-info" onclick="actualizarActividad()">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Usuario</th>
+                                <th>Acción</th>
+                                <th>Módulo</th>
+                                <th>IP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="actividadSistemaTable">
+                            <tr>
+                                <td>10:30</td>
+                                <td>Dr. García</td>
+                                <td>Inició sesión</td>
+                                <td>Dashboard</td>
+                                <td>192.168.1.100</td>
+                            </tr>
+                            <tr>
+                                <td>10:25</td>
+                                <td>María López</td>
+                                <td>Programó examen</td>
+                                <td>Exámenes</td>
+                                <td>192.168.1.101</td>
+                            </tr>
+                            <tr>
+                                <td>10:20</td>
+                                <td>Carlos Martínez</td>
+                                <td>Procesó examen</td>
+                                <td>Exámenes</td>
+                                <td>192.168.1.102</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Notificaciones del sistema -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Notificaciones del Sistema</h3>
+                    <button class="btn btn-warning" onclick="marcarTodasLeídas()">
+                        <i class="fas fa-check-double"></i> Marcar Todas Leídas
+                    </button>
+                </div>
+                <div id="notificacionesSistema">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Sistema:</strong> Backup automático completado exitosamente.
+                        <small class="text-muted">Hace 2 horas</small>
+                    </div>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Alerta:</strong> Usuario con múltiples intentos de login fallidos.
+                        <small class="text-muted">Hace 4 horas</small>
+                    </div>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Éxito:</strong> Nuevo usuario creado correctamente.
+                        <small class="text-muted">Hace 6 horas</small>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/session.js"></script>
+    <script src="../assets/js/sidebar.js"></script>
+    <script src="../assets/js/dashboard.js"></script>
+    <script src="../assets/js/admin.js"></script>
+    
+    <script>
+        // Control del overlay de bienvenida
+        document.addEventListener('DOMContentLoaded', () => {
+            const welcome = document.getElementById('welcomeOverlay');
+            const btnStart = document.getElementById('btnStart');
+            const btnSkip = document.getElementById('btnSkip');
+            const dontShow = document.getElementById('dontShowWelcome');
+
+            try {
+                const hide = localStorage.getItem('policlinico_hide_welcome');
+                if (hide === '1') {
+                    if (welcome) welcome.style.display = 'none';
+                } else {
+                    if (welcome) welcome.style.display = 'flex';
+                }
+            } catch (e) { 
+                if (welcome) welcome.style.display = 'flex'; 
+            }
+
+            if (btnStart) btnStart.addEventListener('click', () => {
+                if (dontShow && dontShow.checked) localStorage.setItem('policlinico_hide_welcome', '1');
+                if (welcome) welcome.style.display = 'none';
+            });
+            
+            if (btnSkip) btnSkip.addEventListener('click', () => {
+                if (dontShow && dontShow.checked) localStorage.setItem('policlinico_hide_welcome', '1');
+                if (welcome) welcome.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

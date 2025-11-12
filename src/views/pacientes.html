@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Pacientes - Policlínico Villa Salud SRL</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-user-md"></i> [Usuario]</h2>
+                <p id="userRole">[Rol]</p>
+            </div>
+            <div class="sidebar-nav">
+                <a href="dashboard-medico.html" class="nav-item" id="dashboardLink">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="pacientes.html" class="nav-item active">
+                    <i class="fas fa-users"></i> Pacientes
+                </a>
+                <a href="examenes.html" class="nav-item">
+                    <i class="fas fa-stethoscope"></i> Exámenes
+                </a>
+                <a href="reportes.html" class="nav-item">
+                    <i class="fas fa-chart-bar"></i> Reportes
+                </a>
+                <a href="#" class="nav-item logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1>Gestión de Pacientes</h1>
+                <div class="user-info">
+                    <button class="btn btn-primary" onclick="abrirModalNuevoPaciente()">
+                        <i class="fas fa-plus"></i> Nuevo Paciente
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtros de búsqueda -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Búsqueda de Pacientes</h3>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="buscarDni">DNI</label>
+                        <input type="text" id="buscarDni" placeholder="Número de DNI..." onkeyup="buscarPacientes()">
+                    </div>
+                    <div class="form-group">
+                        <label for="buscarNombre">Nombre</label>
+                        <input type="text" id="buscarNombre" placeholder="Nombre o apellido..." onkeyup="buscarPacientes()">
+                    </div>
+                    <div class="form-group">
+                        <label for="buscarTelefono">Teléfono</label>
+                        <input type="text" id="buscarTelefono" placeholder="Número de teléfono..." onkeyup="buscarPacientes()">
+                    </div>
+                    <div class="form-group">
+                        <label for="filtroEmpresa">Empresa</label>
+                        <select id="filtroEmpresa" onchange="buscarPacientes()">
+                            <option value="">Todas las empresas</option>
+                            <!-- Se cargarán dinámicamente -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de pacientes -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Lista de Pacientes</h3>
+                    <div>
+                        <button class="btn btn-success" onclick="exportarPacientes()">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                        <button class="btn btn-info" onclick="actualizarPacientes()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombres</th>
+                                <th>Apellidos</th>
+                                <th>Nº Afiliación</th>
+                                <th>DNI</th>
+                                <th>Empresa</th>
+                                <th>Teléfono</th>
+                                <th>Email</th>
+                                <th>Fecha Registro</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pacientesTable">
+                            <!-- Se llenará dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Nuevo Paciente -->
+    <div id="modalNuevoPaciente" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Nuevo Paciente</h3>
+                <span class="close" onclick="cerrarModalNuevoPaciente()">&times;</span>
+            </div>
+            <form id="formNuevoPaciente">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nuevoPacienteDni">DNI *</label>
+                        <input type="text" id="nuevoPacienteDni" required placeholder="12345678">
+                    </div>
+                    <div class="form-group">
+                        <label for="nuevoPacienteEmpresa">Empresa *</label>
+                        <select id="nuevoPacienteEmpresa" required>
+                            <option value="">Seleccionar empresa</option>
+                            <!-- Se cargarán dinámicamente -->
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nuevoPacienteNombre">Nombre *</label>
+                        <input type="text" id="nuevoPacienteNombre" required placeholder="Nombre">
+                    </div>
+                    <div class="form-group">
+                        <label for="nuevoPacienteApellido">Apellido *</label>
+                        <input type="text" id="nuevoPacienteApellido" required placeholder="Apellido">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nuevoPacienteFechaNacimiento">Fecha de Nacimiento *</label>
+                        <input type="date" id="nuevoPacienteFechaNacimiento" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nuevoPacienteTelefono">Teléfono *</label>
+                        <input type="tel" id="nuevoPacienteTelefono" required placeholder="555-0123">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nuevoPacienteEmail">Email</label>
+                        <input type="email" id="nuevoPacienteEmail" placeholder="email@ejemplo.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="nuevoPacienteDireccion">Dirección</label>
+                        <input type="text" id="nuevoPacienteDireccion" placeholder="Dirección completa">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nuevoPacienteNumeroAfiliacion">Número de Afiliación</label>
+                        <input type="text" id="nuevoPacienteNumeroAfiliacion" placeholder="Número de afiliación (opcional)">
+                    </div>
+                    <div class="form-group">
+                        <label for="nuevoPacientePreexistencias">Preexistencias Médicas</label>
+                        <input type="text" id="nuevoPacientePreexistencias" placeholder="Enfermedades previas / alergias (opcional)">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nuevoPacienteGenero">Género</label>
+                        <select id="nuevoPacienteGenero">
+                            <option value="">Seleccionar</option>
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nuevoPacienteTipoExamen">Tipo de Examen</label>
+                        <select id="nuevoPacienteTipoExamen">
+                            <option value="">Seleccionar</option>
+                            <option value="ingreso">Ingreso</option>
+                            <option value="anual">Anual</option>
+                            <option value="retiro">Retiro</option>
+                            <option value="recategorizacion">Recategorización</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalNuevoPaciente()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Paciente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Ver Paciente -->
+    <div id="modalVerPaciente" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Información del Paciente</h3>
+                <span class="close" onclick="cerrarModalVerPaciente()">&times;</span>
+            </div>
+            <div id="pacienteInfo">
+                <!-- Información del paciente se cargará aquí -->
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                <button class="btn btn-warning" onclick="editarPaciente()">
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/database.js"></script>
+    <script src="../assets/js/session.js"></script>
+    <script src="../assets/js/sidebar.js"></script>
+    <script src="../assets/js/pacientes.js"></script>
+    <script src="../assets/js/pdf-generator.js"></script>
+</body>
+</html>

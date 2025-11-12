@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Médico - Sistema Policlínico</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Pantalla de bienvenida / landing -->
+    <div id="welcomeOverlay" class="welcome-overlay">
+        <div class="welcome-card">
+            <div class="welcome-logo">
+                <i class="fas fa-clinic-medical"></i>
+            </div>
+            <h2>Bienvenido a Policlínico Villa Salud SRL</h2>
+            <p class="welcome-sub">Gestión rápida y segura de exámenes médicos ocupacionales. Programa, procesa y publica resultados en PDF.</p>
+            <div class="welcome-actions">
+                <button id="btnStart" class="btn btn-primary">Empezar</button>
+                <button id="btnSkip" class="btn btn-secondary">Cerrar</button>
+            </div>
+            <label class="welcome-hide">
+                <input type="checkbox" id="dontShowWelcome"> No mostrar nuevamente
+            </label>
+        </div>
+    </div>
+    
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-user-md"></i> Dr. [Nombre]</h2>
+                <p>Médico</p>
+            </div>
+            <div class="sidebar-nav">
+                <a href="dashboard-medico.html" class="nav-item active">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="pacientes.html" class="nav-item">
+                    <i class="fas fa-users"></i> Pacientes
+                </a>
+                <a href="examenes.html" class="nav-item">
+                    <i class="fas fa-stethoscope"></i> Exámenes
+                </a>
+                <a href="reportes.html" class="nav-item">
+                    <i class="fas fa-chart-bar"></i> Reportes
+                </a>
+                <a href="#" class="nav-item logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1>Dashboard Médico</h1>
+                <div class="user-info">
+                    <span>Bienvenido, Dr. [Nombre]</span>
+                    <div class="user-avatar">MD</div>
+                </div>
+            </div>
+
+            <!-- Estadísticas del día -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="examenesHoy">8</div>
+                    <div class="stat-label">Exámenes Hoy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pacientesPendientes">12</div>
+                    <div class="stat-label">Pacientes Pendientes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="examenesRecientes">5</div>
+                    <div class="stat-label">Exámenes Recientes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="examenesCompletados">15</div>
+                    <div class="stat-label">Exámenes Completados</div>
+                </div>
+            </div>
+
+            <!-- Exámenes del día -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Exámenes de Hoy</h3>
+                    <button class="btn btn-primary" onclick="verTodosLosExamenes()">
+                        <i class="fas fa-eye"></i> Ver Todos
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Paciente</th>
+                                <th>Tipo Examen</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="examenesHoyTable">
+                            <tr>
+                                <td>09:00</td>
+                                <td>María González</td>
+                                <td>Audiometría</td>
+                                <td><span class="badge badge-success">Confirmada</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm">Ver</button>
+                                    <button class="btn btn-success btn-sm">Iniciar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>10:30</td>
+                                <td>Carlos Rodríguez</td>
+                                <td>Oftalmología</td>
+                                <td><span class="badge badge-warning">En Espera</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm">Ver</button>
+                                    <button class="btn btn-success btn-sm">Iniciar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pacientes pendientes -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Pacientes Pendientes</h3>
+                    <button class="btn btn-primary" onclick="verTodosLosPacientes()">
+                        <i class="fas fa-users"></i> Ver Todos
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Paciente</th>
+                                <th>Última Visita</th>
+                                <th>Próximo Examen</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pacientesPendientesTable">
+                            <tr>
+                                <td>Ana Martínez</td>
+                                <td>15/01/2024</td>
+                                <td>22/01/2024</td>
+                                <td><span class="badge badge-warning">Seguimiento</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm">Ver Historial</button>
+                                    <button class="btn btn-primary btn-sm">Agendar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Resultados de exámenes recientes -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Resultados de Exámenes Recientes</h3>
+                    <button class="btn btn-primary" onclick="verTodosLosExamenes()">
+                        <i class="fas fa-stethoscope"></i> Ver Todos
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Paciente</th>
+                                <th>Tipo de Examen</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="examenesRecientesTable">
+                            <tr>
+                                <td>Luis Pérez</td>
+                                <td>EKG</td>
+                                <td>20/01/2024</td>
+                                <td><span class="badge badge-success">Completado</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm">Ver Resultado</button>
+                                    <button class="btn btn-primary btn-sm">Imprimir</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Sofia Herrera</td>
+                                <td>Audiometría</td>
+                                <td>19/01/2024</td>
+                                <td><span class="badge badge-success">Completado</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm">Ver Resultado</button>
+                                    <button class="btn btn-primary btn-sm">Imprimir</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    
+    <script>
+        // Control del overlay de bienvenida
+        document.addEventListener('DOMContentLoaded', () => {
+            const welcome = document.getElementById('welcomeOverlay');
+            const btnStart = document.getElementById('btnStart');
+            const btnSkip = document.getElementById('btnSkip');
+            const dontShow = document.getElementById('dontShowWelcome');
+
+            try {
+                const hide = localStorage.getItem('policlinico_hide_welcome');
+                if (hide === '1') {
+                    if (welcome) welcome.style.display = 'none';
+                } else {
+                    if (welcome) welcome.style.display = 'flex';
+                }
+            } catch (e) { 
+                if (welcome) welcome.style.display = 'flex'; 
+            }
+
+            if (btnStart) btnStart.addEventListener('click', () => {
+                if (dontShow && dontShow.checked) localStorage.setItem('policlinico_hide_welcome', '1');
+                if (welcome) welcome.style.display = 'none';
+            });
+            
+            if (btnSkip) btnSkip.addEventListener('click', () => {
+                if (dontShow && dontShow.checked) localStorage.setItem('policlinico_hide_welcome', '1');
+                if (welcome) welcome.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

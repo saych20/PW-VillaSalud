@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Citas - Sistema Policlínico</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-user-md"></i> [Usuario]</h2>
+                <p id="userRole">[Rol]</p>
+            </div>
+            <div class="sidebar-nav">
+                <a href="dashboard-medico.html" class="nav-item" id="dashboardLink">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="citas.html" class="nav-item active">
+                    <i class="fas fa-calendar-alt"></i> Citas
+                </a>
+                <a href="pacientes.html" class="nav-item">
+                    <i class="fas fa-users"></i> Pacientes
+                </a>
+                <a href="examenes.html" class="nav-item">
+                    <i class="fas fa-stethoscope"></i> Exámenes
+                </a>
+                <a href="reportes.html" class="nav-item">
+                    <i class="fas fa-chart-bar"></i> Reportes
+                </a>
+                <a href="#" class="nav-item logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1>Gestión de Citas</h1>
+                <div class="user-info">
+                    <button class="btn btn-primary" onclick="abrirModalNuevaCita()">
+                        <i class="fas fa-plus"></i> Nueva Cita
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Filtros de Búsqueda</h3>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="filtroFecha">Fecha</label>
+                        <input type="date" id="filtroFecha" onchange="filtrarCitas()">
+                    </div>
+                    <div class="form-group">
+                        <label for="filtroEstado">Estado</label>
+                        <select id="filtroEstado" onchange="filtrarCitas()">
+                            <option value="">Todos</option>
+                            <option value="programada">Programada</option>
+                            <option value="confirmada">Confirmada</option>
+                            <option value="en_progreso">En Progreso</option>
+                            <option value="completada">Completada</option>
+                            <option value="cancelada">Cancelada</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filtroMedico">Médico</label>
+                        <select id="filtroMedico" onchange="filtrarCitas()">
+                            <option value="">Todos</option>
+                            <option value="dr-garcia">Dr. García</option>
+                            <option value="dr-lopez">Dr. López</option>
+                            <option value="dr-martinez">Dr. Martínez</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filtroPaciente">Paciente</label>
+                        <input type="text" id="filtroPaciente" placeholder="Buscar por nombre..." onkeyup="filtrarCitas()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de citas -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Lista de Citas</h3>
+                    <div>
+                        <button class="btn btn-success" onclick="exportarCitas()">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                        <button class="btn btn-info" onclick="actualizarCitas()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Paciente</th>
+                                <th>Médico</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="citasTable">
+                            <tr>
+                                <td>22/01/2024</td>
+                                <td>09:00</td>
+                                <td>María González</td>
+                                <td>Dr. García</td>
+                                <td>Consulta</td>
+                                <td><span class="badge badge-success">Confirmada</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm" onclick="verCita('1')">Ver</button>
+                                    <button class="btn btn-warning btn-sm" onclick="editarCita('1')">Editar</button>
+                                    <button class="btn btn-danger btn-sm" onclick="cancelarCita('1')">Cancelar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>22/01/2024</td>
+                                <td>10:30</td>
+                                <td>Carlos Rodríguez</td>
+                                <td>Dr. López</td>
+                                <td>Examen</td>
+                                <td><span class="badge badge-warning">En Progreso</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm" onclick="verCita('2')">Ver</button>
+                                    <button class="btn btn-success btn-sm" onclick="completarCita('2')">Completar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>22/01/2024</td>
+                                <td>11:00</td>
+                                <td>Ana Martínez</td>
+                                <td>Dr. García</td>
+                                <td>Seguimiento</td>
+                                <td><span class="badge badge-info">Programada</span></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm" onclick="verCita('3')">Ver</button>
+                                    <button class="btn btn-warning btn-sm" onclick="editarCita('3')">Editar</button>
+                                    <button class="btn btn-success btn-sm" onclick="confirmarCita('3')">Confirmar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Nueva Cita -->
+    <div id="modalNuevaCita" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Nueva Cita</h3>
+                <span class="close" onclick="cerrarModalNuevaCita()">&times;</span>
+            </div>
+            <form id="formNuevaCita">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nuevaCitaPaciente">Paciente *</label>
+                        <select id="nuevaCitaPaciente" required>
+                            <option value="">Seleccionar paciente</option>
+                            <option value="1">María González</option>
+                            <option value="2">Carlos Rodríguez</option>
+                            <option value="3">Ana Martínez</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nuevaCitaMedico">Médico *</label>
+                        <select id="nuevaCitaMedico" required>
+                            <option value="">Seleccionar médico</option>
+                            <option value="dr-garcia">Dr. García</option>
+                            <option value="dr-lopez">Dr. López</option>
+                            <option value="dr-martinez">Dr. Martínez</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nuevaCitaFecha">Fecha *</label>
+                        <input type="date" id="nuevaCitaFecha" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nuevaCitaHora">Hora *</label>
+                        <input type="time" id="nuevaCitaHora" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nuevaCitaTipo">Tipo de Cita *</label>
+                        <select id="nuevaCitaTipo" required>
+                            <option value="">Seleccionar tipo</option>
+                            <option value="consulta">Consulta</option>
+                            <option value="examen">Examen</option>
+                            <option value="seguimiento">Seguimiento</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nuevaCitaEstado">Estado</label>
+                        <select id="nuevaCitaEstado">
+                            <option value="programada">Programada</option>
+                            <option value="confirmada">Confirmada</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="nuevaCitaNotas">Notas</label>
+                    <textarea id="nuevaCitaNotas" rows="3" placeholder="Notas adicionales..."></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalNuevaCita()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cita</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../assets/js/citas.js"></script>
+</body>
+</html>

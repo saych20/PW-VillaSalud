@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trabajadores - Sistema Policlínico</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-building"></i> [Empresa]</h2>
+                <p id="empresaNombre">Nombre de la Empresa</p>
+            </div>
+            <div class="sidebar-nav">
+                <a href="dashboard-empresa.html" class="nav-item">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="trabajadores.html" class="nav-item active">
+                    <i class="fas fa-users"></i> Mis Trabajadores
+                </a>
+                <a href="examenes-empresa.html" class="nav-item">
+                    <i class="fas fa-file-medical-alt"></i> Exámenes EMO
+                </a>
+                <a href="reportes-empresa.html" class="nav-item">
+                    <i class="fas fa-chart-bar"></i> Reportes
+                </a>
+                <a href="#" class="nav-item logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1>Gestión de Trabajadores</h1>
+                <div class="user-info">
+                    <button class="btn btn-primary" onclick="abrirModalNuevoTrabajador()">
+                        <i class="fas fa-plus"></i> Nuevo Trabajador
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Filtros de Búsqueda</h3>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="filtroNombre">Nombre</label>
+                        <input type="text" id="filtroNombre" placeholder="Buscar por nombre..." onkeyup="filtrarTrabajadores()">
+                    </div>
+                    <div class="form-group">
+                        <label for="filtroDNI">DNI</label>
+                        <input type="text" id="filtroDNI" placeholder="Buscar por DNI..." onkeyup="filtrarTrabajadores()">
+                    </div>
+                    <div class="form-group">
+                        <label for="filtroTipoExamen">Tipo de Examen</label>
+                        <select id="filtroTipoExamen" onchange="filtrarTrabajadores()">
+                            <option value="">Todos los tipos</option>
+                            <option value="pre-ocupacional">Pre-Ocupacional</option>
+                            <option value="periodico">Periódico</option>
+                            <option value="retiro">Retiro</option>
+                            <option value="altura">Altura</option>
+                            <option value="psicosensometrico">Psicosensométrico</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filtroEstado">Estado</label>
+                        <select id="filtroEstado" onchange="filtrarTrabajadores()">
+                            <option value="">Todos</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="en_proceso">En Proceso</option>
+                            <option value="completado">Completado</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de trabajadores -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Lista de Trabajadores</h3>
+                    <div>
+                        <button class="btn btn-success" onclick="exportarTrabajadores()">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                        <button class="btn btn-info" onclick="actualizarTrabajadores()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>DNI</th>
+                                <th>Nombre Completo</th>
+                                <th>Tipo Examen</th>
+                                <th>Fecha Examen</th>
+                                <th>Estado EMO</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trabajadoresTable">
+                            <!-- Los datos se cargarán dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Nuevo Trabajador -->
+    <div id="modalNuevoTrabajador" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Nuevo Trabajador</h3>
+                <span class="close" onclick="cerrarModalNuevoTrabajador()">&times;</span>
+            </div>
+            <form id="formNuevoTrabajador">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nuevoTrabajadorDNI">DNI *</label>
+                        <input type="text" id="nuevoTrabajadorDNI" required placeholder="12345678">
+                    </div>
+                    <div class="form-group">
+                        <label for="nuevoTrabajadorNombre">Nombre *</label>
+                        <input type="text" id="nuevoTrabajadorNombre" required placeholder="Nombre completo">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nuevoTrabajadorTipoExamen">Tipo de Examen *</label>
+                        <select id="nuevoTrabajadorTipoExamen" required>
+                            <option value="">Seleccionar tipo</option>
+                            <option value="pre-ocupacional">Pre-Ocupacional</option>
+                            <option value="periodico">Periódico</option>
+                            <option value="retiro">Retiro</option>
+                            <option value="altura">Altura</option>
+                            <option value="psicosensometrico">Psicosensométrico</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nuevoTrabajadorFechaExamen">Fecha de Examen *</label>
+                        <input type="date" id="nuevoTrabajadorFechaExamen" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nuevoTrabajadorPuesto">Puesto de Trabajo</label>
+                        <input type="text" id="nuevoTrabajadorPuesto" placeholder="Puesto al que postula">
+                    </div>
+                    <div class="form-group">
+                        <label for="nuevoTrabajadorTelefono">Teléfono</label>
+                        <input type="tel" id="nuevoTrabajadorTelefono" placeholder="Teléfono de contacto">
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalNuevoTrabajador()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Registrar Trabajador</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Ver Trabajador -->
+    <div id="modalVerTrabajador" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Información del Trabajador</h3>
+                <span class="close" onclick="cerrarModalVerTrabajador()">&times;</span>
+            </div>
+            <div id="trabajadorInfo">
+                <!-- Información del trabajador se cargará aquí -->
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                <button class="btn btn-success" onclick="descargarEMOCompleto()">
+                    <i class="fas fa-download"></i> Descargar EMO Completo
+                </button>
+                <button class="btn btn-primary" onclick="verExamenesTrabajador()">
+                    <i class="fas fa-file-medical-alt"></i> Ver Exámenes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/session.js"></script>
+    <script src="../assets/js/sidebar.js"></script>
+    <script src="../assets/js/empresa.js"></script>
+</body>
+</html>

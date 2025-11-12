@@ -1,0 +1,50 @@
+# Node modules
+node_modules/
+backend/node_modules/
+
+# Environment files
+.env
+backend/.env
+
+# SQLite and DB files
+database/db.sqlite3
+backend/database/db.sqlite3
+*.sqlite3
+
+# Uploads and generated files
+uploads/
+UPLOADS/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS and editor files
+.DS_Store
+.vscode/
+.idea/
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# OneDrive temp files
+~$*
+
+# Misc
+*.tgz
+.pnpm-debug.log
+
+# Ignore sensitive scripts or keys
+secrets/
+
+# Ignore compiled assets
+*.min.js
+*.min.css
+
+# Keep README and license
+!README.md
+!LICENSE

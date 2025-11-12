@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Rutas - Sistema EMOS</title>
+</head>
+<body>
+    <h1>Test de Rutas del Sistema EMOS</h1>
+    
+    <h2>Páginas Disponibles:</h2>
+    <ul>
+        <li><a href="index.html" target="_blank">Página Principal (Landing)</a></li>
+        <li><a href="pages/login.html" target="_blank">Login</a></li>
+        <li><a href="pages/dashboard.html" target="_blank">Dashboard</a></li>
+    </ul>
+    
+    <h2>Verificación de Archivos:</h2>
+    <div id="fileCheck">
+        <p>Verificando archivos...</p>
+    </div>
+    
+    <script>
+        // Verificar que los archivos existan
+        const files = [
+            'css/variables.css',
+            'css/base.css', 
+            'css/components.css',
+            'css/dashboard.css',
+            'js/config.js',
+            'js/utils.js',
+            'js/auth.js',
+            'js/dashboard.js',
+            'js/modules.js'
+        ];
+        
+        const checkDiv = document.getElementById('fileCheck');
+        checkDiv.innerHTML = '<h3>Estado de Archivos:</h3>';
+        
+        files.forEach(file => {
+            fetch(file)
+                .then(response => {
+                    const status = response.ok ? '✅' : '❌';
+                    checkDiv.innerHTML += `<p>${status} ${file}</p>`;
+                })
+                .catch(() => {
+                    checkDiv.innerHTML += `<p>❌ ${file} (Error de red)</p>`;
+                });
+        });
+    </script>
+</body>
+</html>
